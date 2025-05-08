@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="IHM.AdminDashboardController">
+    <top>
+        <Label fx:id="welcomeLabel" text="Bienvenue Admin" 
+               style="-fx-font-size: 20px; -fx-padding: 20;" 
+               BorderPane.alignment="CENTER"/>
+    </top>
+
+    <center>
+        <VBox spacing="15" alignment="CENTER">
+            <Button text="Gérer les centres de tri" />
+            <Button text="Consulter les statistiques" />
+            <Button text="Gérer les utilisateurs" />
+        </VBox>
+    </center>
+
+    <bottom>
+        <Button text="Déconnexion" onAction="#handleLogout"
+                style="-fx-padding: 10;" BorderPane.alignment="CENTER"/>
+    </bottom>
+</BorderPane>

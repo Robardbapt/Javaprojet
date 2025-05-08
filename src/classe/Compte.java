@@ -3,10 +3,8 @@ package classe;
 import java.util.*;
 
 /**
- * Fais partie du package classe qui représente l'ensemble des classes fonctionnelles 
- * Un Compte est une classe qui représente un ménage qui fait ses dépots et utilise les réductions pour acheter d'autres produits 
-**/
-
+ * Représente un compte utilisateur ou admin du système de tri.
+ */
 public class Compte {
 
     private int idCompte;
@@ -15,12 +13,13 @@ public class Compte {
     private String motDePasse;
     private float pointFidelite;
     private String adresse;
+    private String typeUser; // "user" ou "admin"
 
     private List<Poubelle> poubellesAutorisees;
     private List<Produit> produitsPossedes;
     private List<BonReduction> bonsDisponibles; 
     private HistoriqueDepot historique;         
-    
+
     // Constructeur de base //
     public Compte() {
         this.poubellesAutorisees = new ArrayList<>();
@@ -28,15 +27,17 @@ public class Compte {
         this.bonsDisponibles = new ArrayList<>();
         this.historique = new HistoriqueDepot();
         this.pointFidelite = 0f;
+        this.typeUser = "user";
     }
 
     // Constructeur complet //
-    public Compte(int id, String nom, String email, String motDePasse, String adresse) {
+    public Compte(int id, String nom, String email, String motDePasse, String adresse, String typeUser) {
         this.idCompte = id;
         this.nom = nom;
         this.email = email;
         this.motDePasse = motDePasse;
         this.adresse = adresse;
+        this.typeUser = typeUser;
         this.poubellesAutorisees = new ArrayList<>();
         this.produitsPossedes = new ArrayList<>();
         this.bonsDisponibles = new ArrayList<>();
@@ -44,12 +45,12 @@ public class Compte {
         this.pointFidelite = 0f;
     }
 
-    // Se connecter à un compte en particulier lié à un mail et un mdp //
+    // Se connecter à un compte
     public boolean seConnecter(String email, String mdp) {
         return this.email.equals(email) && this.motDePasse.equals(mdp);
     }
 
-    // Le ménage dépose des déchets dans une poubelle spécifique //
+    // Déposer des déchets
     public boolean deposerDechets(Poubelle poubelle, Dechet dechet) {
         if (dechet == null) return false;
         if (poubellesAutorisees.contains(poubelle) && poubelle.verifierTypeDechet(dechet)) {
@@ -62,19 +63,18 @@ public class Compte {
         return false;
     }
 
-    // Le ménage échange ses points contre un bon de réduction //
+    // Échanger un bon de réduction
     public boolean echangerPoints(BonReduction bon) {
         if (bon != null && this.pointFidelite >= bon.getPointsNecessaires()) {
             this.pointFidelite -= bon.getPointsNecessaires();
             bon.utiliserBon();
             bonsDisponibles.remove(bon);
-            System.out.println("Bon de réduction échangé avec succès.");
             return true;
         }
         return false;
     }
 
-    // Le ménage achète un produit en utilisant ses points de fidélité/réduction //
+    // Acheter un produit
     public List<String> acheterProduits(Produit p) {
         List<String> actions = new ArrayList<>();
         if (p != null) {
@@ -87,22 +87,19 @@ public class Compte {
         return actions;
     }
 
-    // Consulte l'ensemble des depots liés au compte //
     public HistoriqueDepot consulterHistoriqueDepots() {
         return historique;
     }
 
-    // Ajoute une poubelle à celles autorisées //
     public void ajouterPoubelle(Poubelle p) {
         this.poubellesAutorisees.add(p);
     }
 
-    // Ajoute un bon à ceux acquis //
     public void ajouterBon(BonReduction bon) {
         this.bonsDisponibles.add(bon);
     }
 
-    // getters et setters //
+    // Getters & Setters
     public int getIdCompte() { return idCompte; }
     public void setIdCompte(int idCompte) { this.idCompte = idCompte; }
 
@@ -110,12 +107,19 @@ public class Compte {
     public void setNom(String nom) { this.nom = nom; }
 
     public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
     public String getMotDePasse() { return motDePasse; }
+    public void setMotDePasse(String motDePasse) { this.motDePasse = motDePasse; }
 
     public float getPointFidelite() { return pointFidelite; }
     public void setPointFidelite(float pointFidelite) { this.pointFidelite = pointFidelite; }
 
     public String getAdresse() { return adresse; }
+    public void setAdresse(String adresse) { this.adresse = adresse; }
+
+    public String getTypeUser() { return typeUser; }
+    public void setTypeUser(String typeUser) { this.typeUser = typeUser; }
 
     public List<Poubelle> getPoubellesAutorisees() { return poubellesAutorisees; }
 

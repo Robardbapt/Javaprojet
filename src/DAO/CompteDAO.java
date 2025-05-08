@@ -8,19 +8,17 @@ import classe.Poubelle;
 import classe.Produit;
 import classe.BonReduction;
 
-/*/ classe DAO de la classe Compte, permettant son implémentation dans une base de données/*/
 public class CompteDAO {
 
-    private final PoubelleDAO poubelleDAO    = new PoubelleDAO();
-    private final ProduitDAO produitDAO      = new ProduitDAO();
-    private final BonReductionDAO bonDAO     = new BonReductionDAO();
+    private final PoubelleDAO poubelleDAO = new PoubelleDAO();
+    private final ProduitDAO produitDAO = new ProduitDAO();
+    private final BonReductionDAO bonDAO = new BonReductionDAO();
 
-/*/ méthode qui insert un compte dans la base SQL /*/
     public void insert(Compte c) {
         String sql = """
             INSERT INTO Compte
-              (idCompte, nom, email, motDePasse, pointFidelite, adresse)
-            VALUES (?, ?, ?, ?, ?, ?)
+              (idCompte, nom, email, motDePasse, pointFidelite, adresse, typeUser)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
         """;
         try (Connection conn = DataBaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -31,6 +29,7 @@ public class CompteDAO {
             stmt.setString(4, c.getMotDePasse());
             stmt.setFloat(5, c.getPointFidelite());
             stmt.setString(6, c.getAdresse());
+            stmt.setString(7, c.getTypeUser());
             stmt.executeUpdate();
 
             insertAssociations(conn, c);
@@ -40,11 +39,10 @@ public class CompteDAO {
         }
     }
 
-/*/ méthode mettant à jour un compte dans la base SQL /*/
     public void update(Compte c) {
         String sql = """
             UPDATE Compte
-               SET nom = ?, email = ?, motDePasse = ?, pointFidelite = ?, adresse = ?
+               SET nom = ?, email = ?, motDePasse = ?, pointFidelite = ?, adresse = ?, typeUser = ?
              WHERE idCompte = ?
         """;
         try (Connection conn = DataBaseManager.getConnection();
@@ -55,7 +53,8 @@ public class CompteDAO {
             stmt.setString(3, c.getMotDePasse());
             stmt.setFloat(4, c.getPointFidelite());
             stmt.setString(5, c.getAdresse());
-            stmt.setInt(6, c.getIdCompte());
+            stmt.setString(6, c.getTypeUser());
+            stmt.setInt(7, c.getIdCompte());
             stmt.executeUpdate();
 
             clearAssociations(conn, c.getIdCompte());
@@ -66,7 +65,6 @@ public class CompteDAO {
         }
     }
 
-/*/ méthode supprimant un compte de la base de données /*/
     public void delete(int idCompte) {
         try (Connection conn = DataBaseManager.getConnection()) {
             clearAssociations(conn, idCompte);
@@ -80,7 +78,6 @@ public class CompteDAO {
         }
     }
 
-/*/ méthode récupérant un compte par son ID /*/
     public Compte getById(int idCompte) {
         Compte c = null;
         String sql = "SELECT * FROM Compte WHERE idCompte = ?";
@@ -95,40 +92,35 @@ public class CompteDAO {
                     rs.getString("nom"),
                     rs.getString("email"),
                     rs.getString("motDePasse"),
-                    rs.getString("adresse")
+                    rs.getString("adresse"),
+                    rs.getString("typeUser")
                 );
                 c.setPointFidelite(rs.getFloat("pointFidelite"));
 
-                /*/ Poubelles autorisées /*/
                 try (PreparedStatement ps = conn.prepareStatement(
                         "SELECT idPoubelle FROM Compte_Poubelle WHERE idCompte = ?")) {
                     ps.setInt(1, idCompte);
                     ResultSet prs = ps.executeQuery();
                     while (prs.next()) {
-                        Poubelle p = poubelleDAO.getById(prs.getInt("idPoubelle"));
-                        c.getPoubellesAutorisees().add(p);
+                        c.getPoubellesAutorisees().add(poubelleDAO.getById(prs.getInt("idPoubelle")));
                     }
                 }
 
-                /*/ Produits possédés /*/
                 try (PreparedStatement ps = conn.prepareStatement(
                         "SELECT idProduit FROM Compte_Produit WHERE idCompte = ?")) {
                     ps.setInt(1, idCompte);
                     ResultSet prs = ps.executeQuery();
                     while (prs.next()) {
-                        c.getProduitsPossedes()
-                         .add(produitDAO.getById(prs.getInt("idProduit")));
+                        c.getProduitsPossedes().add(produitDAO.getById(prs.getInt("idProduit")));
                     }
                 }
 
-                /*/ Bons disponibles /*/
                 try (PreparedStatement ps = conn.prepareStatement(
                         "SELECT idBon FROM Compte_BonReduction WHERE idCompte = ?")) {
                     ps.setInt(1, idCompte);
                     ResultSet prs = ps.executeQuery();
                     while (prs.next()) {
-                        c.getBonsDisponibles()
-                         .add(bonDAO.getById(prs.getInt("idBon")));
+                        c.getBonsDisponibles().add(bonDAO.getById(prs.getInt("idBon")));
                     }
                 }
             }
@@ -138,7 +130,6 @@ public class CompteDAO {
         return c;
     }
 
-/*/ méthode récupérant tous les comptes de la base SQL /*/
     public List<Compte> getAll() {
         List<Compte> list = new ArrayList<>();
         String sql = "SELECT idCompte FROM Compte";
@@ -170,12 +161,12 @@ public class CompteDAO {
     }
 
     private void insertAssociations(Connection conn, Compte c) throws SQLException {
-        String sqlP  = "INSERT INTO Compte_Poubelle (idCompte, idPoubelle) VALUES (?, ?)";
+        String sqlP = "INSERT INTO Compte_Poubelle (idCompte, idPoubelle) VALUES (?, ?)";
         String sqlPr = "INSERT INTO Compte_Produit  (idCompte, idProduit)  VALUES (?, ?)";
-        String sqlB  = "INSERT INTO Compte_BonReduction (idCompte, idBon) VALUES (?, ?)";
-        try (PreparedStatement psP  = conn.prepareStatement(sqlP);
+        String sqlB = "INSERT INTO Compte_BonReduction (idCompte, idBon) VALUES (?, ?)";
+        try (PreparedStatement psP = conn.prepareStatement(sqlP);
              PreparedStatement psPr = conn.prepareStatement(sqlPr);
-             PreparedStatement psB  = conn.prepareStatement(sqlB)) {
+             PreparedStatement psB = conn.prepareStatement(sqlB)) {
 
             for (Poubelle p : c.getPoubellesAutorisees()) {
                 psP.setInt(1, c.getIdCompte());
@@ -198,5 +189,26 @@ public class CompteDAO {
             }
             psB.executeBatch();
         }
+    }
+
+    public Compte findByEmailAndPassword(String email, String password) {
+        String sql = "SELECT idCompte FROM Compte WHERE email = ? AND motDePasse = ?";
+        try (Connection conn = DataBaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, email);
+            stmt.setString(2, password);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                int idCompte = rs.getInt("idCompte");
+                return getById(idCompte);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 }

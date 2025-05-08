@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="IHM.LoginController">
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="IHM.RegisterController">
     <children>
         <VBox alignment="CENTER" spacing="10.0" layoutX="100" layoutY="50"
               AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
               AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0">
-            <Label text="Connexion à la plateforme" style="-fx-font-size: 18px;" />
+            <Label text="Créer un compte" style="-fx-font-size: 18px;" />
             <TextField fx:id="usernameField" promptText="Adresse e-mail" />
             <PasswordField fx:id="passwordField" promptText="Mot de passe" />
-            <Button text="Se connecter" onAction="#handleLogin" />
-            <Button text="Créer un compte" onAction="#handleShowRegister" />
-            <Label fx:id="errorLabel" textFill="red"/>
+            <Button text="Créer le compte" onAction="#handleRegister" />
+            <Button text="Retour à la connexion" onAction="#handleBack" />
+            <Label fx:id="messageLabel" textFill="red" />
         </VBox>
     </children>
 </AnchorPane>

@@ -1,4 +1,4 @@
-package main;
+package mainTest;
 
 public class MainDAOTest {
     public static void main(String[] args) {
