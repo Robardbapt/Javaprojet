@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
@@ -22,7 +23,7 @@ public class UserDashboardController {
     @FXML private TableView<Poubelle> poubelleTable;
     @FXML private TableColumn<Poubelle, Integer> colId;
     @FXML private TableColumn<Poubelle, String> colType;
-    @FXML private TableColumn<Poubelle, Integer> colCapacite;
+    @FXML private TableColumn<Poubelle, Float> colCapacite;
     @FXML private TableColumn<Poubelle, String> colEmplacement;
     @FXML private TableColumn<Poubelle, Void> colAction;
 
@@ -36,9 +37,10 @@ public class UserDashboardController {
         adresseLabel.setText("Adresse : " + compte.getAdresse());
 
         colId.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().getIdPoubelle()));
-        colType.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().getType()));
-        colCapacite.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().getCapaciteMax()));
-        colEmplacement.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().getEmplacement()));
+        colType.setCellValueFactory(data -> new ReadOnlyObjectWrapper<String>(data.getValue().getType().toString()));
+        colCapacite.setCellValueFactory(data -> new ReadOnlyObjectWrapper<Float>(data.getValue().getCapaciteMax()));
+
+        colEmplacement.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().getAdresse()));
 
         ajouterBoutonsDepot();
         poubelleTable.getItems().addAll(compte.getPoubellesAutorisees());
@@ -49,20 +51,21 @@ public class UserDashboardController {
 
     private void chargerPoubellesDepuisBDD() {
         try (Connection conn = DataBaseConnection.getConnection()) {
-            String sql = "SELECT * FROM Poubelle WHERE id_compte = ?";
+            String sql = "SELECT * FROM compte_poubelle WHERE idCompte = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, compte.getIdCompte());
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                int id = rs.getInt("idPoubelle");
-                String type = rs.getString("typePoubelle");
-                int capacite = rs.getInt("capacite");
-                String emplacement = rs.getString("emplacement");
+            	int id = rs.getInt("idPoubelle");
+            	String nom = rs.getString("nom");
+            	TypePoubelle type = TypePoubelle.valueOf(rs.getString("typePoubelle"));
+            	float capacite = rs.getFloat("capacite");
+            	String adresse = rs.getString("emplacement");
 
-                // Création de l'objet Poubelle
-                Poubelle p = new Poubelle(id, type, capacite, emplacement);
-                compte.ajouterPoubelle(p); // facultatif
+            	Poubelle p = new Poubelle(id, nom, type);
+            	p.setCapaciteMax(capacite);
+            	p.setAdresse(adresse);
 
                 VBox bloc = new VBox(5);
                 bloc.setStyle("-fx-padding: 10; -fx-border-color: #ccc; -fx-border-radius: 5; -fx-background-color: #f8f8f8;");
@@ -70,7 +73,7 @@ public class UserDashboardController {
                 Label idLabel = new Label("ID : " + id);
                 Label typeLabel = new Label("Type : " + type);
                 Label capaciteLabel = new Label("Capacité max : " + capacite);
-                Label emplacementLabel = new Label("Emplacement : " + emplacement);
+                Label emplacementLabel = new Label("Emplacement : " + adresse);
 
                 Button boutonDepot = new Button("Déposer ici");
                 boutonDepot.setOnAction(e -> {

@@ -12,6 +12,8 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.control.cell.PropertyValueFactory;
 import java.util.List;
 
+import DAO.CompteDAO;
+
 public class AchatProduitsController {
 
     @FXML private TableView<BonReduction> produitTable;
