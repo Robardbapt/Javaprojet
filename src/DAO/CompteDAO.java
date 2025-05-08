@@ -211,4 +211,19 @@ public class CompteDAO {
 
         return null;
     }
+
+    public void updatePoints(int idCompte, float nouveauxPoints) {
+        String sql = "UPDATE Compte SET pointFidelite = ? WHERE idCompte = ?";
+        try (Connection conn = DataBaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setFloat(1, nouveauxPoints);
+            stmt.setInt(2, idCompte);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
