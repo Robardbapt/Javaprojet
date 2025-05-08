@@ -2,65 +2,91 @@ package IHM;
 
 import classe.*;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.stage.Stage;
-import javafx.scene.Scene;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.Parent;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.stage.Stage;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-/**
- * Contrôleur du tableau de bord utilisateur.
- */
 public class UserDashboardController {
 
-    @FXML
-    private Label welcomeLabel;
+    @FXML private Label welcomeLabel;
+    @FXML private Label pointsLabel;
+    @FXML private Label adresseLabel;
+    @FXML private VBox listePoubellesVBox;
+    @FXML private TableView<Poubelle> poubelleTable;
+    @FXML private TableColumn<Poubelle, Integer> colId;
+    @FXML private TableColumn<Poubelle, String> colType;
+    @FXML private TableColumn<Poubelle, Integer> colCapacite;
+    @FXML private TableColumn<Poubelle, String> colEmplacement;
+    @FXML private TableColumn<Poubelle, Void> colAction;
 
-    @FXML
-    private Label pointsLabel;
 
-    private String emailUtilisateur;
-
-    /**
-     * Définit l'email de l'utilisateur et charge les infos de la BDD.
-     * @param email email de l'utilisateur connecté
-     */
-    public void setNomUtilisateur(String email) {
-        this.emailUtilisateur = email;
-        welcomeLabel.setText("Bienvenue " + email);
-
-        try (Connection conn = DataBaseConnection.getConnection()) {
-            String sql = "SELECT pointFidelite FROM Compte WHERE email = ?";
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setString(1, emailUtilisateur);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                int points = rs.getInt("pointFidelite");
-                pointsLabel.setText("Points de fidélité : " + points);
-            } else {
-                pointsLabel.setText("Compte introuvable.");
-            }
-        } catch (Exception e) {
-            pointsLabel.setText("Erreur lors du chargement des points.");
-            e.printStackTrace();
-        }
-    }
-    
     private Compte compte;
 
     public void setCompte(Compte compte) {
         this.compte = compte;
         welcomeLabel.setText("Bienvenue " + compte.getNom());
         pointsLabel.setText("Points de fidélité : " + compte.getPointFidelite());
+        adresseLabel.setText("Adresse : " + compte.getAdresse());
+
+        colId.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().getIdPoubelle()));
+        colType.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().getType()));
+        colCapacite.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().getCapaciteMax()));
+        colEmplacement.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(data.getValue().getEmplacement()));
+
+        ajouterBoutonsDepot();
+        poubelleTable.getItems().addAll(compte.getPoubellesAutorisees());
+
+
+        chargerPoubellesDepuisBDD();
     }
 
-    /**
-     * Handler pour afficher l'historique (à implémenter).
-     */
+    private void chargerPoubellesDepuisBDD() {
+        try (Connection conn = DataBaseConnection.getConnection()) {
+            String sql = "SELECT * FROM Poubelle WHERE id_compte = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, compte.getIdCompte());
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                int id = rs.getInt("idPoubelle");
+                String type = rs.getString("typePoubelle");
+                int capacite = rs.getInt("capacite");
+                String emplacement = rs.getString("emplacement");
+
+                // Création de l'objet Poubelle
+                Poubelle p = new Poubelle(id, type, capacite, emplacement);
+                compte.ajouterPoubelle(p); // facultatif
+
+                VBox bloc = new VBox(5);
+                bloc.setStyle("-fx-padding: 10; -fx-border-color: #ccc; -fx-border-radius: 5; -fx-background-color: #f8f8f8;");
+
+                Label idLabel = new Label("ID : " + id);
+                Label typeLabel = new Label("Type : " + type);
+                Label capaciteLabel = new Label("Capacité max : " + capacite);
+                Label emplacementLabel = new Label("Emplacement : " + emplacement);
+
+                Button boutonDepot = new Button("Déposer ici");
+                boutonDepot.setOnAction(e -> {
+                    // À remplacer plus tard par une popup ou choix réel de déchet
+                    System.out.println("Dépôt demandé dans poubelle " + id);
+                });
+
+                bloc.getChildren().addAll(idLabel, typeLabel, capaciteLabel, emplacementLabel, boutonDepot);
+                listePoubellesVBox.getChildren().add(bloc);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @FXML
     private void handleVoirHistorique() {
         try {
@@ -68,7 +94,7 @@ public class UserDashboardController {
             Parent root = loader.load();
 
             HistoriqueController controller = loader.getController();
-            controller.setCompte(compte);  // on transmet le compte entier
+            controller.setCompte(compte);
 
             Stage stage = (Stage) welcomeLabel.getScene().getWindow();
             stage.setScene(new Scene(root));
@@ -78,11 +104,58 @@ public class UserDashboardController {
         }
     }
 
+    @FXML
+    private void handleVoirProduits() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("FXML/AchatProduits.fxml"));
+            Parent root = loader.load();
 
+            AchatProduitsController controller = loader.getController();
+            controller.setCompte(compte);
 
-    /**
-     * Retourne à la page de connexion.
-     */
+            Stage stage = (Stage) welcomeLabel.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Produits et Bons de réduction");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void ajouterBoutonsDepot() {
+        colAction.setCellFactory(param -> new TableCell<>() {
+            private final Button btn = new Button("Déposer");
+
+            {
+                btn.setOnAction(event -> {
+                    Poubelle p = getTableView().getItems().get(getIndex());
+                    try {
+                        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("FXML/DepotView.fxml"));
+                        Parent root = loader.load();
+
+                        DepotViewController controller = loader.getController();
+                        controller.initialiser(compte, p);
+
+                        Stage stage = (Stage) welcomeLabel.getScene().getWindow();
+                        stage.setScene(new Scene(root));
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                    // Tu peux ici ouvrir une popup ou appeler une méthode pour simuler le dépôt
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(btn);
+                }
+            }
+        });
+    }
+
     @FXML
     private void handleDeconnexion() {
         try {
