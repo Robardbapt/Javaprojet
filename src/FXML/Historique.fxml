@@ -1,23 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="IHM.HistoriqueController">
     <top>
-        <Label text="Historique des dépôts" style="-fx-font-size: 18px; -fx-padding: 10;" />
+        <Label text="Historique de vos dépôts"
+               style="-fx-font-size: 20px; -fx-padding: 10;"
+               BorderPane.alignment="CENTER"/>
     </top>
+
     <center>
-        <TableView fx:id="tableHistorique">
+        <TableView fx:id="tableHistorique" prefHeight="400" prefWidth="600">
             <columns>
-                <TableColumn fx:id="colDate" text="Date"/>
-                <TableColumn fx:id="colDechet" text="Type de déchet"/>
-                <TableColumn fx:id="colQuantite" text="Quantité"/>
-                <TableColumn fx:id="colPoints" text="Points gagnés"/>
+                <TableColumn fx:id="colDate" text="Date du dépôt" prefWidth="150"/>
+                <TableColumn fx:id="colDechet" text="Type de déchet" prefWidth="150"/>
+                <TableColumn fx:id="colQuantite" text="Quantité (kg)" prefWidth="150"/>
+                <TableColumn fx:id="colPoints" text="Points gagnés" prefWidth="150"/>
             </columns>
         </TableView>
     </center>
+
     <bottom>
-        <Button text="Retour" onAction="#handleRetour" style="-fx-padding: 10;" BorderPane.alignment="CENTER"/>
+        <Button text="Retour" onAction="#handleRetour"
+                style="-fx-font-size: 14px; -fx-padding: 10;"
+                BorderPane.alignment="CENTER"/>
     </bottom>
 </BorderPane>

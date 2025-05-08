@@ -1,7 +1,10 @@
 package IHM;
 
+import DAO.HistoriqueDepotDAO;
 import classe.Compte;
 import classe.Depot;
+import classe.HistoriqueDepot;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -21,16 +24,20 @@ public class HistoriqueController {
     @FXML private TableColumn<Depot, Float> colPoints;
 
     private Compte compte;
+    private final HistoriqueDepotDAO historiqueDepotDAO = new HistoriqueDepotDAO();
 
+    /**
+     * Setter appelé depuis le contrôleur précédent (UserDashboard).
+     * Permet de charger l'historique de l'utilisateur connecté.
+     */
     public void setCompte(Compte compte) {
         this.compte = compte;
         afficherDepots();
     }
 
     private void afficherDepots() {
-        ObservableList<Depot> depots = FXCollections.observableArrayList(
-            compte.getHistorique().getDepots()
-        );
+        HistoriqueDepot historique = historiqueDepotDAO.getByCompteId(compte.getIdCompte());
+        ObservableList<Depot> depots = FXCollections.observableArrayList(historique.getDepots());
 
         colDate.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(
             cellData.getValue().getDateDepot().toString()
