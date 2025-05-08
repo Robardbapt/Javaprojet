@@ -1,5 +1,6 @@
 package IHM;
 
+import DAO.CentreDeTriDAO;
 import DAO.CompteDAO;
 import classe.Compte;
 import javafx.fxml.FXML;
@@ -15,10 +16,17 @@ public class CreerCompteController {
     @FXML private ComboBox<String> typeBox;
 
     private final CompteDAO compteDAO = new CompteDAO();
+    private final CentreDeTriDAO centreDAO = new CentreDeTriDAO();
+
+    private Compte compteAdmin;
 
     @FXML
     private void initialize() {
         typeBox.getItems().addAll("user", "admin");
+    }
+
+    public void setCompteAdmin(Compte admin) {
+        this.compteAdmin = admin;
     }
 
     @FXML
@@ -40,13 +48,22 @@ public class CreerCompteController {
         c.setMotDePasse(mdp);
         c.setAdresse(adresse);
         c.setTypeUser(type);
-
-        // ID auto-assigné par la base ou à calculer si nécessaire
+        c.setPointFidelite(0);
         c.setIdCompte((int) (Math.random() * 100000)); // temporaire
+
         compteDAO.insert(c);
 
-        new Alert(Alert.AlertType.INFORMATION, "Compte créé avec succès.").showAndWait();
+        if (type.equals("user")) {
+            try {
+                int idCentre = centreDAO.getIdCentreByAdmin(compteAdmin.getIdCompte());
+                compteDAO.lierComptePoubelle(c.getIdCompte(), idCentre);
+            } catch (Exception e) {
+                e.printStackTrace();
+                new Alert(Alert.AlertType.ERROR, "Erreur lors de l'affectation des poubelles.").showAndWait();
+            }
+        }
 
+        new Alert(Alert.AlertType.INFORMATION, "Compte créé avec succès.").showAndWait();
         Stage stage = (Stage) nomField.getScene().getWindow();
         stage.close();
     }

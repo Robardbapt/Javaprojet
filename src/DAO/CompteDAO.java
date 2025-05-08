@@ -252,5 +252,25 @@ public class CompteDAO {
             e.printStackTrace();
         }
     }
+    
+    public void lierComptePoubelle(int idCompte, int idCentre) {
+        String sql = """
+            INSERT INTO Compte_Poubelle (idCompte, idPoubelle)
+            SELECT ?, idPoubelle
+            FROM Poubelle
+            WHERE idCentreDeTri = ?
+        """;
+        try (Connection conn = DataBaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idCompte);
+            stmt.setInt(2, idCentre);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 }

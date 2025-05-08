@@ -79,7 +79,7 @@ public class GestionComptesController {
             stage.setScene(new Scene(root));
             stage.showAndWait();
 
-            chargerComptes(); // refresh après modif
+            chargerComptes();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -102,22 +102,25 @@ public class GestionComptesController {
             e.printStackTrace();
         }
     }
-    
+
     @FXML
     private void handleCreer() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("FXML/CreerCompte.fxml"));
             Parent root = loader.load();
 
+            CreerCompteController controller = loader.getController();
+            controller.setCompteAdmin(this.compteAdmin); // correction ici
+
             Stage stage = new Stage();
-            stage.setScene(new Scene(root));
             stage.setTitle("Créer un compte");
+            stage.setScene(new Scene(root));
             stage.showAndWait();
 
-            chargerComptes(); // refresh la liste après création
+            chargerComptes();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
 }
