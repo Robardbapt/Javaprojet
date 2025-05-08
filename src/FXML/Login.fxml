@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="IHM.LoginController">
+    <children>
+        <VBox alignment="CENTER" spacing="10.0" layoutX="100" layoutY="50"
+              AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
+              AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0">
+            <Label text="Connexion à la plateforme" style="-fx-font-size: 18px;" />
+            <TextField fx:id="usernameField" promptText="Nom d'utilisateur" />
+            <PasswordField fx:id="passwordField" promptText="Mot de passe" />
+            <Button text="Se connecter" onAction="#handleLogin" />
+            <Label fx:id="errorLabel" textFill="red"/>
+        </VBox>
+    </children>
+</AnchorPane>
