@@ -3,26 +3,26 @@ package classe;
 import java.util.*;
 
 /**
- * Fais partie du package classe qui représente l'ensemble des classes fonctionnelles 
- * Un CentreDeTri est une classe qui représente l'entité qui gère les poubelles et qui établit des contrats avec les commerces
-**/
-
+ * Représente un centre de tri géré par un administrateur, contenant des poubelles et des contrats.
+ */
 public class CentreDeTri {
 
     private int idCentreDeTri;
     private String nom;
     private String adresse;
+    private int idAdmin; // nouveau champ : ID du compte administrateur
+
     private List<Contrat> partenariats;
     private Statistique statistique;
     private Map<String, List<Poubelle>> poubellesPlacees;
 
-    // Constructeur de base //
+    // Constructeur de base
     public CentreDeTri() {
         this.partenariats = new ArrayList<>();
         this.poubellesPlacees = new HashMap<>();
     }
 
-    // Constructeur complet // 
+    // Constructeur complet sans admin
     public CentreDeTri(int id, String nom, String adresse) {
         this.idCentreDeTri = id;
         this.nom = nom;
@@ -31,14 +31,24 @@ public class CentreDeTri {
         this.poubellesPlacees = new HashMap<>();
     }
 
-    // Placer une poubelle à une adresse spécifique //
+    // Constructeur complet avec admin
+    public CentreDeTri(int id, String nom, String adresse, int idAdmin) {
+        this.idCentreDeTri = id;
+        this.nom = nom;
+        this.adresse = adresse;
+        this.idAdmin = idAdmin;
+        this.partenariats = new ArrayList<>();
+        this.poubellesPlacees = new HashMap<>();
+    }
+
+    // Placer une poubelle
     public void placerPoubelle(Poubelle p, String adresse) {
         poubellesPlacees.putIfAbsent(adresse, new ArrayList<>());
         poubellesPlacees.get(adresse).add(p);
         System.out.println("Poubelle placée à l'adresse : " + adresse);
     }
 
-    // Retirer une poubelle d'une adresse spécifique //
+    // Retirer une poubelle
     public void retirerPoubelle(Poubelle p, String adresse) {
         if (poubellesPlacees.containsKey(adresse)) {
             poubellesPlacees.get(adresse).remove(p);
@@ -51,13 +61,13 @@ public class CentreDeTri {
         }
     }
 
-    // Vide la poubelle et collecte les déchets //
+    // Collecte des déchets
     public void collecteDechets(Poubelle p) {
         p.vider();
         System.out.println("Déchets collectés pour la poubelle : " + p.getIdPoubelle());
     }
 
-    // getters et setters //
+    // Getters & Setters
     public int getIdCentreDeTri() {
         return idCentreDeTri;
     }
@@ -80,6 +90,14 @@ public class CentreDeTri {
 
     public void setAdresse(String adresse) {
         this.adresse = adresse;
+    }
+
+    public int getIdAdmin() {
+        return idAdmin;
+    }
+
+    public void setIdAdmin(int idAdmin) {
+        this.idAdmin = idAdmin;
     }
 
     public List<Contrat> getPartenariats() {
@@ -106,7 +124,6 @@ public class CentreDeTri {
         this.poubellesPlacees = poubellesPlacees;
     }
 
-    // Ajoute un contrat au CentreDeTri //
     public void ajouterPartenariat(Contrat contrat) {
         this.partenariats.add(contrat);
     }

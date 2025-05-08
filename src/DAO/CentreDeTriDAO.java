@@ -1,28 +1,27 @@
 package DAO;
 
 import java.sql.*;
-
 import java.util.*;
+
 import classe.CentreDeTri;
 import classe.Contrat;
 import classe.Poubelle;
 
-/*/ classe DAO de la classe CentreDeTri, permettant son implémentation dans une base de données/*/
 public class CentreDeTriDAO {
 
-    private final ContratDAO contratDAO          = new ContratDAO();
-    private final PoubelleDAO poubelleDAO        = new PoubelleDAO();
-    private final StatistiqueDAO statistiqueDAO  = new StatistiqueDAO();
+    private final ContratDAO contratDAO = new ContratDAO();
+    private final PoubelleDAO poubelleDAO = new PoubelleDAO();
+    private final StatistiqueDAO statistiqueDAO = new StatistiqueDAO();
 
-/*/ méthode qui insert un centre de tri dans la base de données /*/
     public void insert(CentreDeTri centre) {
-        String sql = "INSERT INTO CentreDeTri (idCentreDeTri, nom, adresse) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO CentreDeTri (idCentreDeTri, nom, adresse, id_admin) VALUES (?, ?, ?, ?)";
         try (Connection conn = DataBaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, centre.getIdCentreDeTri());
             stmt.setString(2, centre.getNom());
             stmt.setString(3, centre.getAdresse());
+            stmt.setInt(4, centre.getIdAdmin());
             stmt.executeUpdate();
 
             int id = centre.getIdCentreDeTri();
@@ -35,12 +34,12 @@ public class CentreDeTriDAO {
                     poubelleDAO.insert(p, id);
                 }
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-/*/ méthode supprimant un centre de tri de la base de données et ses classes liées par compositions /*/
     public void delete(int idCentre) {
         contratDAO.deleteByCentreId(idCentre);
         poubelleDAO.deleteByCentreId(idCentre);
@@ -54,15 +53,15 @@ public class CentreDeTriDAO {
         }
     }
 
-/*/ méthode mettant à jour un centre de tri dans la base de données, et également ses classes liées par compositions /*/
     public void update(CentreDeTri centre) {
-        String sql = "UPDATE CentreDeTri SET nom = ?, adresse = ? WHERE idCentreDeTri = ?";
+        String sql = "UPDATE CentreDeTri SET nom = ?, adresse = ?, id_admin = ? WHERE idCentreDeTri = ?";
         try (Connection conn = DataBaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, centre.getNom());
             stmt.setString(2, centre.getAdresse());
-            stmt.setInt(3, centre.getIdCentreDeTri());
+            stmt.setInt(3, centre.getIdAdmin());
+            stmt.setInt(4, centre.getIdCentreDeTri());
             stmt.executeUpdate();
 
             int id = centre.getIdCentreDeTri();
@@ -77,12 +76,12 @@ public class CentreDeTriDAO {
                     poubelleDAO.insert(p, id);
                 }
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-/*/ méthode récupérant un centre de tri dans la base de données grâce à son ID/*/
     public CentreDeTri getById(int idCentre) {
         CentreDeTri centre = null;
         String sql = "SELECT * FROM CentreDeTri WHERE idCentreDeTri = ?";
@@ -95,8 +94,10 @@ public class CentreDeTriDAO {
                 centre = new CentreDeTri(
                     rs.getInt("idCentreDeTri"),
                     rs.getString("nom"),
-                    rs.getString("adresse")
+                    rs.getString("adresse"),
+                    rs.getInt("id_admin")
                 );
+
                 centre.setPartenariats(contratDAO.getByCentreId(idCentre));
                 centre.setStatistique(statistiqueDAO.getByCentreId(idCentre));
 
@@ -113,7 +114,6 @@ public class CentreDeTriDAO {
         return centre;
     }
 
-/*/ méthode récupérant tous les centres de tri dans la base de données dans une liste /*/
     public List<CentreDeTri> getAll() {
         List<CentreDeTri> list = new ArrayList<>();
         String sql = "SELECT idCentreDeTri FROM CentreDeTri";
@@ -128,5 +128,25 @@ public class CentreDeTriDAO {
             e.printStackTrace();
         }
         return list;
+    }
+
+    /**
+     * Méthode utile pour l’IHM : récupérer les centres d’un admin donné
+     */
+    public List<CentreDeTri> getByAdminId(int idAdmin) {
+        List<CentreDeTri> centres = new ArrayList<>();
+        String sql = "SELECT idCentreDeTri FROM CentreDeTri WHERE id_admin = ?";
+        try (Connection conn = DataBaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idAdmin);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                centres.add(getById(rs.getInt("idCentreDeTri")));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return centres;
     }
 }

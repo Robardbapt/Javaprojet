@@ -13,6 +13,10 @@ public class Dechet {
 
     // Constructeur de base //
     public Dechet() {}
+    
+    public Dechet(String nom) {
+        this.nom = nom;
+    }
 
     // Constructeur semi-complet //
     public Dechet(String nom, Contenu contenu) {
