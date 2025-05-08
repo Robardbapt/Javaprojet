@@ -1,6 +1,9 @@
 package IHM;
 
 import DAO.DepotDAO;
+import DAO.PoubelleDAO;
+import DAO.CompteDAO;
+import DAO.HistoriqueDepotDAO;
 import classe.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,7 +12,8 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
-import java.util.Date;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Random;
 
 public class DepotViewController {
@@ -19,8 +23,10 @@ public class DepotViewController {
 
     private Compte compte;
     private Poubelle poubelle;
-
+    private final HistoriqueDepotDAO historiqueDepotDAO = new HistoriqueDepotDAO();
     private final DepotDAO depotDAO = new DepotDAO();
+    private final CompteDAO compteDAO = new CompteDAO();
+    private final PoubelleDAO poubelleDAO = new PoubelleDAO();
 
     public void initialize() {
         typeComboBox.getItems().addAll("plastique", "verre", "carton", "métal");
@@ -37,37 +43,66 @@ public class DepotViewController {
             String type = typeComboBox.getValue();
             float masse = Float.parseFloat(masseField.getText());
 
+            if (type == null || masse <= 0) {
+                throw new IllegalArgumentException("Champs invalides");
+            }
+
+            // Sécurisation : recharge de la poubelle depuis la BDD
+            this.poubelle = poubelleDAO.getById(poubelle.getIdPoubelle());
+
             Contenu contenu = Contenu.valueOf(type.toUpperCase());
             Dechet dechet = new Dechet(type, contenu, masse);
 
-            Depot depot = new Depot(dechet, masse, String.valueOf(poubelle.getIdPoubelle()));
-            depot.setIdDepot(genererIdDepot()); // méthode à améliorer plus tard
-            depot.setDateDepot(new Date());
-            depot.setPointsGagnes(depot.calculerValeurDepot());
-
-            boolean success = compte.deposerDechets(poubelle, dechet); // côté Java (logique métier)
-            depotDAO.insert(depot); // côté base de données
-
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Résultat du dépôt");
-
-            if (success) {
-                alert.setContentText("Dépôt enregistré avec succès !");
-            } else {
-                alert.setContentText("Attention : déchet incorrect pour cette poubelle.");
+            if (!poubelle.verifierTypeDechet(dechet)) {
+                showAlert(Alert.AlertType.ERROR, "Type incorrect", "Ce type de déchet n'est pas accepté par cette poubelle.");
+                return;
             }
 
-            alert.showAndWait();
+            Depot depot = new Depot(dechet, masse, String.valueOf(poubelle.getIdPoubelle()));
+            depot.setIdDepot(genererIdDepot());
+            depot.setDateDepot(Timestamp.valueOf(LocalDateTime.now()));
+            depot.setPointsGagnes(depot.calculerValeurDepot());
+
+            float espaceRestant = poubelle.gererQuantiteDechet(depot);
+
+            if (espaceRestant < 0) {
+                showAlert(Alert.AlertType.WARNING, "Capacité dépassée", "La poubelle est pleine ou ne peut pas contenir autant.");
+                return;
+            }
+
+            compte.getHistorique().ajouterDepot(depot);
+            compte.setPointFidelite(compte.getPointFidelite() + depot.getPointsGagnes());
+
+            // DEBUG : affichage de la nouvelle capacité avant update
+            System.out.println("Capacité actuelle après dépôt : " + poubelle.getCapaciteActuelle());
+
+            // Mise à jour en base
+            depotDAO.insert(depot);
+            historiqueDepotDAO.insertDepot(depot, compte.getIdCompte());
+            compteDAO.updatePoints(compte.getIdCompte(), compte.getPointFidelite());
+            poubelleDAO.update(poubelle);
+
+            showAlert(Alert.AlertType.INFORMATION, "Succès", "Déchet déposé avec succès ! Points gagnés : " + depot.getPointsGagnes());
             retourDashboard();
 
+        } catch (NumberFormatException e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur de saisie", "Veuillez entrer une masse valide (ex : 2.5)");
         } catch (Exception e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Erreur dans la saisie.");
-            alert.showAndWait();
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Une erreur est survenue lors du dépôt.");
         }
     }
 
     private int genererIdDepot() {
-        return new Random().nextInt(100000); // à remplacer par une vraie logique auto-incrémentée en BDD si possible
+        return new Random().nextInt(900000) + 100000;
+    }
+
+    private void showAlert(Alert.AlertType type, String titre, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle(titre);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     @FXML

@@ -40,6 +40,19 @@ public class PoubelleDAO {
             e.printStackTrace();
         }
     }
+    
+    public void delete(int idPoubelle) {
+        String sql = "DELETE FROM Poubelle WHERE idPoubelle = ?";
+        try (Connection conn = DataBaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idPoubelle);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
 /*/ méthode mettant à jour une poubelle dans la base de données /*/
     public void update(Poubelle p) {

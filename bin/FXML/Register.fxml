@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.geometry.Insets?>
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="IHM.RegisterController">
@@ -12,8 +13,12 @@
             <Label text="Créer un compte" style="-fx-font-size: 18px;" />
             <TextField fx:id="usernameField" promptText="Adresse e-mail" />
             <PasswordField fx:id="passwordField" promptText="Mot de passe" />
+
+            <!-- Liste déroulante pour les centres de tri -->
+            <Label text="Choisissez votre centre de tri" />
+            <ComboBox fx:id="centreComboBox" prefWidth="200"/>
+
             <Button text="Créer le compte" onAction="#handleRegister" />
-            <Button text="Retour à la connexion" onAction="#handleBack" />
             <Label fx:id="messageLabel" textFill="red" />
         </VBox>
     </children>

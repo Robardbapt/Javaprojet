@@ -4,14 +4,15 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.Label;
+import javafx.scene.control.ComboBox;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.collections.FXCollections;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
+import java.util.*;
 
 /**
  * Contrôleur pour la création d'un compte utilisateur.
@@ -25,7 +26,34 @@ public class RegisterController {
     private PasswordField passwordField;
 
     @FXML
+    private ComboBox<String> centreComboBox;
+
+    @FXML
     private Label messageLabel;
+
+    private Map<String, Integer> nomCentreToId = new HashMap<>();
+
+    /**
+     * Initialise les centres dans la ComboBox
+     */
+    @FXML
+    public void initialize() {
+        try (Connection conn = DataBaseConnection.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement("SELECT idCentreDeTri, nom FROM CentreDeTri");
+            ResultSet rs = stmt.executeQuery();
+            List<String> noms = new ArrayList<>();
+            while (rs.next()) {
+                int id = rs.getInt("idCentreDeTri");
+                String nom = rs.getString("nom");
+                noms.add(nom);
+                nomCentreToId.put(nom, id);
+            }
+            centreComboBox.setItems(FXCollections.observableArrayList(noms));
+        } catch (Exception e) {
+            e.printStackTrace();
+            messageLabel.setText("Erreur chargement centres.");
+        }
+    }
 
     /**
      * Création d'un compte si l'email n'existe pas encore.
@@ -34,8 +62,9 @@ public class RegisterController {
     private void handleRegister() {
         String email = usernameField.getText();
         String password = passwordField.getText();
+        String centreNom = centreComboBox.getValue();
 
-        if (email.isBlank() || password.isBlank()) {
+        if (email.isBlank() || password.isBlank() || centreNom == null) {
             messageLabel.setText("Veuillez remplir tous les champs.");
             return;
         }
@@ -49,16 +78,35 @@ public class RegisterController {
             if (rs.next()) {
                 messageLabel.setText("Un compte avec cet email existe déjà.");
             } else {
-                // Création du compte : id auto-incrémenté (ou géré autrement), nom = email, adresse par défaut
+                // Insère le compte
                 PreparedStatement insert = conn.prepareStatement(
-                    "INSERT INTO Compte (nom, email, motDePasse, pointFidelite, adresse) VALUES (?, ?, ?, 0, ?)"
+                    "INSERT INTO Compte (nom, email, motDePasse, pointFidelite, adresse, typeUser) VALUES (?, ?, ?, 0, ?, 'user')",
+                    Statement.RETURN_GENERATED_KEYS
                 );
-                insert.setString(1, email);      // nom = email par défaut
-                insert.setString(2, email);      // email
-                insert.setString(3, password);   // mot de passe
-                insert.setString(4, "adresse inconnue"); // valeur temporaire
-
+                insert.setString(1, email);
+                insert.setString(2, email);
+                insert.setString(3, password);
+                insert.setString(4, "adresse inconnue");
                 insert.executeUpdate();
+
+                ResultSet generatedKeys = insert.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    int idCompte = generatedKeys.getInt(1);
+                    int idCentre = nomCentreToId.get(centreNom);
+
+                    // Récupère les poubelles du centre et les associe au compte
+                    PreparedStatement getPoubelles = conn.prepareStatement("SELECT idPoubelle FROM Poubelle WHERE idCentreDeTri = ?");
+                    getPoubelles.setInt(1, idCentre);
+                    ResultSet rsP = getPoubelles.executeQuery();
+                    while (rsP.next()) {
+                        int idP = rsP.getInt("idPoubelle");
+                        PreparedStatement assoc = conn.prepareStatement("INSERT INTO Compte_Poubelle (idCompte, idPoubelle) VALUES (?, ?)");
+                        assoc.setInt(1, idCompte);
+                        assoc.setInt(2, idP);
+                        assoc.executeUpdate();
+                    }
+                }
+
                 messageLabel.setText("Compte créé avec succès !");
             }
         } catch (Exception e) {

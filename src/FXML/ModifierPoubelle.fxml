@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="IHM.ModifierPoubelleController"
+      spacing="10" alignment="CENTER" style="-fx-padding: 20;">
+
+    <Label text="Modifier une poubelle" style="-fx-font-size: 16px;" />
+
+    <TextField fx:id="nomField" promptText="Nom de la poubelle" />
+    <TextField fx:id="capaciteMaxField" promptText="Capacité maximale" />
+    <TextField fx:id="capaciteActuelleField" promptText="Capacité actuelle" />
+    <TextField fx:id="adresseField" promptText="Adresse" />
+    <ComboBox fx:id="typeBox" promptText="Type de poubelle" />
+
+    <Button text="Enregistrer" onAction="#handleSave" />
+</VBox>

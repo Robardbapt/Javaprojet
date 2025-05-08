@@ -12,6 +12,7 @@
             <Label fx:id="welcomeLabel" text="Bienvenue !" style="-fx-font-size: 20px; -fx-font-weight: bold;" />
             <Label fx:id="adresseLabel" text="Adresse : " style="-fx-font-size: 14px;" />
             <Label fx:id="pointsLabel" text="Points de fidélité : 0" style="-fx-font-size: 14px;" />
+            <Label fx:id="centreLabel" text="Centre assigné : " style="-fx-font-size: 14px;" />
         </VBox>
     </top>
 

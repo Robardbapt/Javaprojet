@@ -77,6 +77,33 @@ public class CompteDAO {
             e.printStackTrace();
         }
     }
+    
+    public List<Compte> getByCentreId(int idCentre) {
+        List<Compte> comptes = new ArrayList<>();
+        String sql = """
+            SELECT DISTINCT c.idCompte
+            FROM Compte c
+            JOIN Compte_Poubelle cp ON c.idCompte = cp.idCompte
+            JOIN Poubelle p ON cp.idPoubelle = p.idPoubelle
+            WHERE p.idCentreDeTri = ?
+        """;
+
+        try (Connection conn = DataBaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idCentre);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                comptes.add(getById(rs.getInt("idCompte")));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return comptes;
+    }
 
     public Compte getById(int idCompte) {
         Compte c = null;

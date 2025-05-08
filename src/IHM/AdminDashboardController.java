@@ -32,4 +32,22 @@ public class AdminDashboardController {
             e.printStackTrace();
         }
     }
+    
+    @FXML
+    private void handleGererCentre() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("FXML/GestionCentre.fxml"));
+            Parent root = loader.load();
+
+            GestionCentreController controller = loader.getController();
+            controller.setCompte(compte); // passe l'admin connecté
+
+            Stage stage = (Stage) welcomeLabel.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Centre de tri - Administration");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

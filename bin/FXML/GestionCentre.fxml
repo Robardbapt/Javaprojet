@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="IHM.GestionCentreController">
+
+    <center>
+        <VBox alignment="CENTER" spacing="15" BorderPane.alignment="CENTER">
+            <Button text="Gérer les poubelles" onAction="#handleGestionPoubelles" />
+            <Button text="Gérer les comptes" onAction="#handleGestionComptes" />
+        </VBox>
+    </center>
+
+    <bottom>
+        <Button text="Retour" onAction="#handleRetour"
+                style="-fx-padding: 10;" BorderPane.alignment="CENTER"/>
+    </bottom>
+
+</BorderPane>
