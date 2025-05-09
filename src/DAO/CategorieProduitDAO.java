@@ -218,5 +218,27 @@ public class CategorieProduitDAO {
         }
         return -1; // Retourne -1 si aucune catégorie trouvée
     }
+    
+    public List<CategorieProduit> getByCommerce(int idCommerce) {
+        List<CategorieProduit> list = new ArrayList<>();
+        String sql = """
+            SELECT cp.idCategorie
+            FROM commerce_categorie cc
+            JOIN categorieproduit cp ON cc.idCategorie = cp.idCategorie
+            WHERE cc.idCommerce = ?
+        """;
+        try (Connection conn = DataBaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idCommerce);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                list.add(getById(rs.getInt("idCategorie")));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
 
 }

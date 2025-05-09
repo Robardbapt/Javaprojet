@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="IHM.AchatProduitController" prefWidth="800" prefHeight="600">
+    <children>
+
+        <!-- Points de fidélité -->
+        <Label fx:id="labelPoints" layoutX="30" layoutY="20" text="Points de fidélité : 0" style="-fx-font-weight: bold;" />
+
+        <!-- Table des commerces -->
+        <Label layoutX="30" layoutY="60" text="Commerces rattachés à votre centre de tri" />
+        <TableView fx:id="tableCommerces" layoutX="30" layoutY="90" prefWidth="740" prefHeight="180" />
+        <Button fx:id="btnVoirCategories" layoutX="600" layoutY="280" text="Voir catégories" />
+
+        <!-- Table des bons de réduction -->
+        <Label layoutX="30" layoutY="320" text="Vos bons de réduction disponibles" />
+        <TableView fx:id="tableBons" layoutX="30" layoutY="350" prefWidth="740" prefHeight="180" />
+        <Button fx:id="btnUtiliserBon" layoutX="600" layoutY="540" text="Utiliser le bon sélectionné" />
+
+        <!-- Bouton Retour -->
+        <Button fx:id="btnRetour" layoutX="30" layoutY="540" text="Retour" onAction="#handleRetour"/>
+
+    </children>
+</AnchorPane>

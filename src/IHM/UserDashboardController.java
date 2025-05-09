@@ -158,10 +158,10 @@ public class UserDashboardController {
     @FXML
     private void handleVoirProduits() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("FXML/AchatProduits.fxml"));
-            Parent root = loader.load();
+        	FXMLLoader loader = new FXMLLoader(getClass().getResource("/FXML/AchatProduit.fxml"));
+        	Parent root = loader.load();
 
-            AchatProduitsController controller = loader.getController();
+            AchatProduitController controller = loader.getController();
             controller.setCompte(compte);
 
             Stage stage = (Stage) welcomeLabel.getScene().getWindow();

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="IHM.ConversionPointsController" prefWidth="800" prefHeight="600">
+    <children>
+
+        <!-- Points fidélité -->
+        <Label fx:id="labelPoints" layoutX="30" layoutY="20" text="Points : ..." style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+
+        <!-- Table des commerces -->
+        <Label layoutX="30" layoutY="60" text="Commerces rattachés à votre centre de tri" style="-fx-font-size: 14px;" />
+        <TableView fx:id="tableCommerces" layoutX="30" layoutY="90" prefWidth="740" prefHeight="160">
+            <columns>
+                <TableColumn fx:id="colNomCommerce" text="Nom du commerce" prefWidth="400" />
+                <TableColumn fx:id="colBtnVoirCategories" text="Actions" prefWidth="300" />
+            </columns>
+        </TableView>
+
+        <!-- Table des catégories -->
+        <Label layoutX="30" layoutY="270" text="Catégories de produits en promotion" style="-fx-font-size: 14px;" />
+        <TableView fx:id="tableCategories" layoutX="30" layoutY="300" prefWidth="740" prefHeight="200">
+            <columns>
+                <TableColumn fx:id="colNomCat" text="Nom de la catégorie" prefWidth="200" />
+                <TableColumn fx:id="colTaux" text="Taux de réduction" prefWidth="150" />
+                <TableColumn fx:id="colPoints" text="Points nécessaires" prefWidth="150" />
+                <TableColumn fx:id="colVoirProduits" text="Produits" prefWidth="120" />
+                <TableColumn fx:id="colConvertir" text="Convertir" prefWidth="120" />
+            </columns>
+        </TableView>
+
+        <!-- Bouton retour -->
+        <Button fx:id="btnRetour" layoutX="30" layoutY="520" text="Retour" onAction="#handleRetour"/>
+
+    </children>
+</AnchorPane>

@@ -159,4 +159,20 @@ public class PoubelleDAO {
         }
         return list;
     }
+    
+    public int getCentreIdByPoubelleId(int idPoubelle) {
+        String sql = "SELECT idCentreDeTri FROM Poubelle WHERE idPoubelle = ?";
+        try (Connection conn = DataBaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idPoubelle);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("idCentreDeTri");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
 }

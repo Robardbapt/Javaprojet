@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="IHM.ProduitsAvecReductionController" prefWidth="800" prefHeight="600">
+    <children>
+        <Label fx:id="labelPoints" layoutX="30" layoutY="20" text="Points de fidélité : 0" style="-fx-font-weight: bold;" />
+
+        <Label layoutX="30" layoutY="60" text="Produits de la catégorie du bon sélectionné :" />
+
+        <TableView fx:id="tableProduits" layoutX="30" layoutY="90" prefWidth="740" prefHeight="400" />
+
+        <Button fx:id="btnAcheterProduit" layoutX="600" layoutY="500" text="Acheter le produit sélectionné" />
+        <Button fx:id="btnRetour" layoutX="30" layoutY="500" text="Retour" onAction="#handleRetour"/>
+    </children>
+</AnchorPane>

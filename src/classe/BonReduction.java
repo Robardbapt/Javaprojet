@@ -43,6 +43,9 @@ public class BonReduction {
 
     // getters et setters //
     public int getIdBon() { return idBon; }
+    public void setIdBon(int idBon) {
+        this.idBon = idBon;
+    }
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
@@ -54,7 +57,7 @@ public class BonReduction {
     public void setPointsNecessaires(int pointsNecessaires) { this.pointsNecessaires = pointsNecessaires; }
 
     public boolean isEstUtilise() { return estUtilise; }
-
+    
     public CategorieProduit getCategorieLiee() { return categorieLiee; }
     public void setCategorieLiee(CategorieProduit categorieLiee) { this.categorieLiee = categorieLiee; }
 }

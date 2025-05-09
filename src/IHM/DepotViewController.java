@@ -29,7 +29,7 @@ public class DepotViewController {
     private final PoubelleDAO poubelleDAO = new PoubelleDAO();
 
     public void initialize() {
-        typeComboBox.getItems().addAll("plastique", "verre", "carton", "métal");
+        typeComboBox.getItems().addAll("Plastique", "Verre", "Papier", "Métaux", "Biodéchet");
     }
 
     public void initialiser(Compte compte, Poubelle poubelle) {
@@ -50,7 +50,7 @@ public class DepotViewController {
             // Sécurisation : recharge de la poubelle depuis la BDD
             this.poubelle = poubelleDAO.getById(poubelle.getIdPoubelle());
 
-            Contenu contenu = Contenu.valueOf(type.toUpperCase());
+            Contenu contenu = mapToEnum(type);
             Dechet dechet = new Dechet(type, contenu, masse);
 
             if (!poubelle.verifierTypeDechet(dechet)) {
@@ -73,10 +73,6 @@ public class DepotViewController {
             compte.getHistorique().ajouterDepot(depot);
             compte.setPointFidelite(compte.getPointFidelite() + depot.getPointsGagnes());
 
-            // DEBUG : affichage de la nouvelle capacité avant update
-            System.out.println("Capacité actuelle après dépôt : " + poubelle.getCapaciteActuelle());
-
-            // Mise à jour en base
             depotDAO.insert(depot);
             historiqueDepotDAO.insertDepot(depot, compte.getIdCompte());
             compteDAO.updatePoints(compte.getIdCompte(), compte.getPointFidelite());
@@ -91,6 +87,17 @@ public class DepotViewController {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Erreur", "Une erreur est survenue lors du dépôt.");
         }
+    }
+
+    private Contenu mapToEnum(String type) {
+        return switch (type.toLowerCase()) {
+            case "plastique"  -> Contenu.PLASTIQUE;
+            case "verre"      -> Contenu.VERRE;
+            case "papier"     -> Contenu.PAPIER;
+            case "métaux"     -> Contenu.METAUX;
+            case "biodéchet"  -> Contenu.BIODECHET;
+            default -> throw new IllegalArgumentException("Type inconnu : " + type);
+        };
     }
 
     private int genererIdDepot() {

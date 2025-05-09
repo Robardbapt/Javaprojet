@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="IHM.ProduitsParCategorieController" prefWidth="800" prefHeight="600">
+    <children>
+        <Label fx:id="labelTitreCategorie" layoutX="30" layoutY="20" text="Produits de la catégorie : ..." style="-fx-font-weight: bold;" />
+
+        <TableView fx:id="tableProduits" layoutX="30" layoutY="60" prefWidth="740" prefHeight="500" />
+    </children>
+</AnchorPane>
