@@ -42,29 +42,32 @@ public class CreerCompteController {
             return;
         }
 
-        Compte c = new Compte();
-        c.setNom(nom);
-        c.setEmail(email);
-        c.setMotDePasse(mdp);
-        c.setAdresse(adresse);
-        c.setTypeUser(type);
-        c.setPointFidelite(0);
-        c.setIdCompte((int) (Math.random() * 100000)); // temporaire
+        try {
+            // Création sans ID (auto-incrément SQL)
+            Compte c = new Compte();
+            c.setNom(nom);
+            c.setEmail(email);
+            c.setMotDePasse(mdp);
+            c.setAdresse(adresse);
+            c.setTypeUser(type);
+            c.setPointFidelite(0);
 
-        compteDAO.insert(c);
+            int generatedId = compteDAO.insertAndReturnId(c);
+            c.setIdCompte(generatedId); // mise à jour de l’objet Compte avec l’ID réel
 
-        if (type.equals("user")) {
-            try {
+            // Lier automatiquement au centre de tri de l’admin si c’est un user
+            if (type.equals("user")) {
                 int idCentre = centreDAO.getIdCentreByAdmin(compteAdmin.getIdCompte());
-                compteDAO.lierComptePoubelle(c.getIdCompte(), idCentre);
-            } catch (Exception e) {
-                e.printStackTrace();
-                new Alert(Alert.AlertType.ERROR, "Erreur lors de l'affectation des poubelles.").showAndWait();
+                compteDAO.lierComptePoubelle(generatedId, idCentre);
             }
-        }
 
-        new Alert(Alert.AlertType.INFORMATION, "Compte créé avec succès.").showAndWait();
-        Stage stage = (Stage) nomField.getScene().getWindow();
-        stage.close();
+            new Alert(Alert.AlertType.INFORMATION, "Compte créé avec succès.").showAndWait();
+            Stage stage = (Stage) nomField.getScene().getWindow();
+            stage.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            new Alert(Alert.AlertType.ERROR, "Erreur lors de la création du compte.").showAndWait();
+        }
     }
 }

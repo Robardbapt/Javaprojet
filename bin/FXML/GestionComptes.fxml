@@ -26,6 +26,7 @@
             	<Button text="Créer un nouveau compte" onAction="#handleCreer"/>
                 <Button text="Modifier la sélection" onAction="#handleModifier"/>
                 <Button text="Supprimer la sélection" onAction="#handleSupprimer"/>
+                 <Button text="Transférer le compte vers un autre centre de tri" onAction="#handleTransfererCentre" />
             </VBox>
         </VBox>
     </center>

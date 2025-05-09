@@ -27,10 +27,14 @@
     </center>
 
     <bottom>
-        <HBox spacing="20" alignment="CENTER" style="-fx-padding: 10;">
-            <Button text="Modifier la sélection" onAction="#handleModifier"/>
-            <Button text="Supprimer la sélection" onAction="#handleSupprimer"/>
-            <Button text="Retour" onAction="#handleRetour"/>
-        </HBox>
+        <HBox spacing="10" alignment="CENTER" style="-fx-padding: 10;">
+    <Button text="Créer une poubelle" onAction="#handleCreerPoubelle"/>
+    <Button text="Modifier la sélection" onAction="#handleModifier"/>
+    <Button text="Supprimer la sélection" onAction="#handleSupprimer"/>
+    <Button text="Vider la poubelle" onAction="#handleViderPoubelle"/>
+    <Button text="Retour" onAction="#handleRetour"/>
+</HBox>
+
+
     </bottom>
 </BorderPane>

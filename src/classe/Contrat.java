@@ -13,6 +13,7 @@ public class Contrat {
     private Date dateDebut;
     private Date dateFin;
     private int tauxDeConversion; 
+    private int idCentre; // Nouveau champ pour lier au centre de tri
     private List<CategorieProduit> categoriesConcernees;
 
     // Constructeur de base //
@@ -99,6 +100,14 @@ public class Contrat {
 
     public void setCategoriesConcernees(List<CategorieProduit> categoriesConcernees) {
         this.categoriesConcernees = categoriesConcernees;
+    }
+
+    public int getIdCentre() {
+        return idCentre;
+    }
+
+    public void setIdCentre(int idCentre) {
+        this.idCentre = idCentre;
     }
 
     // Ajoute une catégorieProduit au contrat //

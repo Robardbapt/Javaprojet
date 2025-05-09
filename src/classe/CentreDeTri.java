@@ -127,4 +127,10 @@ public class CentreDeTri {
     public void ajouterPartenariat(Contrat contrat) {
         this.partenariats.add(contrat);
     }
+    
+    @Override
+    public String toString() {
+        return nom; // ou : return nom + " (" + adresse + ")";
+    }
+
 }

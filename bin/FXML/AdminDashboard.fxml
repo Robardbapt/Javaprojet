@@ -14,8 +14,9 @@
     <center>
         <VBox spacing="15" alignment="CENTER">
             <Button text="Gérer son centre de tri" onAction="#handleGererCentre" />
-            <Button text="Consulter les statistiques" />
-            <Button text="Gérer les utilisateurs" />
+            <Button text="Consulter les statistiques" onAction="#handleConsulterStatistiques" />
+			<Button text="Gérer les partenariats" onAction="#handleGererPartenariats" />
+			
         </VBox>
     </center>
 

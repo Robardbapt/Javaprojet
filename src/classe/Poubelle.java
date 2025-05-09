@@ -21,6 +21,16 @@ public class Poubelle {
     public Poubelle() {
         this.historiqueDepots = new ArrayList<>();
     }
+    
+ // Constructeur sans ID pour création avec auto-incrément SQL
+    public Poubelle(String nom, TypePoubelle type) {
+        this.nom = nom;
+        this.typePoubelle = type;
+        this.capaciteActuelle = 0f;
+        this.capaciteMax = 100f;
+        this.estPleine = false;
+        this.historiqueDepots = new ArrayList<>();
+    }
 
     // Constructeur complet //
     public Poubelle(int idPoubelle, String nom, TypePoubelle type) {

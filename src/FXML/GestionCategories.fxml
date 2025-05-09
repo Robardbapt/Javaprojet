@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/21"
+      fx:controller="IHM.GestionCategoriesController"
+      spacing="10" alignment="CENTER" style="-fx-padding: 20;">
+
+    <Label text="Gestion des Catégories" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+
+    <Label text="Catégories associées au commerce sélectionné" />
+
+    <TableView fx:id="tableCategories" prefWidth="400">
+        <columns>
+            <TableColumn fx:id="colNom" text="Nom" prefWidth="300"/>
+        </columns>
+    </TableView>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Button text="Créer" onAction="#handleCreerCategorie" />
+        <Button text="Modifier" onAction="#handleModifierCategorie" />
+        <Button text="Supprimer" onAction="#handleSupprimerCategorie" />
+        <Button text="Gérer Produits" onAction="#handleGererProduits" />
+    </HBox>
+
+    <Button text="Retour aux Partenariats" onAction="#handleRetour" />
+
+</VBox>

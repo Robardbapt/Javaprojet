@@ -123,4 +123,30 @@ public class GestionComptesController {
             e.printStackTrace();
         }
     }
+    
+    @FXML
+    private void handleTransfererCentre() {
+        Compte selected = tableComptes.getSelectionModel().getSelectedItem();
+        if (selected == null || selected.getTypeUser().equals("admin")) {
+            new Alert(Alert.AlertType.WARNING, "Veuillez sélectionner un utilisateur non-admin.").showAndWait();
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("FXML/TransfererCentre.fxml"));
+            Parent root = loader.load();
+
+            TransfererCentreController controller = loader.getController();
+            controller.initialiser(selected);
+
+            Stage stage = new Stage();
+            stage.setTitle("Transférer le compte vers un autre centre");
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+
+            chargerComptes();  // Refresh
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

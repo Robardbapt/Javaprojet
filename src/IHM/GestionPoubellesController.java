@@ -105,4 +105,41 @@ public class GestionPoubellesController {
             e.printStackTrace();
         }
     }
+    
+    @FXML
+    private void handleViderPoubelle() {
+        Poubelle selected = tablePoubelles.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            new Alert(Alert.AlertType.WARNING, "Veuillez sélectionner une poubelle à vider.").showAndWait();
+            return;
+        }
+
+        selected.setCapaciteActuelle(0f);
+        selected.setEstPleine(false);
+        poubelleDAO.update(selected);
+
+        new Alert(Alert.AlertType.INFORMATION, "La poubelle a été vidée avec succès.").showAndWait();
+        chargerPoubelles(); // Recharge la table pour mettre à jour l'affichage
+    }
+    @FXML
+    private void handleCreerPoubelle() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("FXML/CreerPoubelle.fxml"));
+            Parent root = loader.load();
+
+            CreerPoubelleController controller = loader.getController();
+            controller.setAdmin(compteAdmin);
+
+            Stage stage = new Stage();
+            stage.setTitle("Créer une poubelle");
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+
+            chargerPoubelles(); // rafraîchit la liste après création
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

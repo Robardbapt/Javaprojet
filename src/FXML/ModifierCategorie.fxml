@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="IHM.ModifierCategorieController"
+      spacing="10" alignment="CENTER" style="-fx-padding: 20;">
+    <Label text="Modifier la catégorie" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+
+    <TextField fx:id="fieldNom" promptText="Nom de la catégorie" />
+    <TextField fx:id="fieldTaux" promptText="Taux de réduction (%)" />
+    <TextField fx:id="fieldPoints" promptText="Points nécessaires" />
+
+    <HBox spacing="10">
+        <Button text="Enregistrer" onAction="#handleModifier" />
+        <Button text="Annuler" onAction="#handleAnnuler" />
+    </HBox>
+</VBox>

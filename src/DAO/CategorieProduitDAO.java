@@ -8,33 +8,40 @@ import classe.Produit;
 public class CategorieProduitDAO {
 
 /*/ méthode permettant d'insérer une catégorie produit dans la base de données/*/
-    public void insert(CategorieProduit cp) {
-        String sql = 
-            "INSERT INTO CategorieProduit (idCategorie, nom, tauxReduction, pointNecessaire) " +
-            "VALUES (?, ?, ?, ?)";
-        String linkSql = 
-            "INSERT INTO Produit_Categorie (idProduit, idCategorie) VALUES (?, ?)";
-        try (Connection conn = DataBaseManager.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             PreparedStatement linkStmt = conn.prepareStatement(linkSql)) {
+	public void insert(CategorieProduit cp) {
+	    String sql =
+	        "INSERT INTO CategorieProduit (nom, tauxReduction, pointNecessaire) VALUES (?, ?, ?)";
+	    String linkSql =
+	        "INSERT INTO Produit_Categorie (idProduit, idCategorie) VALUES (?, ?)";
 
-            stmt.setInt(1, cp.getIdCategorie());
-            stmt.setString(2, cp.getNom());
-            stmt.setFloat(3, cp.getTauxReduction());
-            stmt.setInt(4, cp.getPointNecessaire());
-            stmt.executeUpdate();
+	    try (Connection conn = DataBaseManager.getConnection();
+	         PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+	         PreparedStatement linkStmt = conn.prepareStatement(linkSql)) {
 
-            for (Produit p : cp.getProduits()) {
-                linkStmt.setInt(1, p.getIdProduit());
-                linkStmt.setInt(2, cp.getIdCategorie());
-                linkStmt.addBatch();
-            }
-            linkStmt.executeBatch();
+	        stmt.setString(1, cp.getNom());
+	        stmt.setFloat(2, cp.getTauxReduction());
+	        stmt.setInt(3, cp.getPointNecessaire());
+	        stmt.executeUpdate();
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+	        // Récupérer l'ID généré automatiquement
+	        ResultSet rs = stmt.getGeneratedKeys();
+	        if (rs.next()) {
+	            cp.setIdCategorie(rs.getInt(1));
+	        }
+
+	        // Insérer les associations avec les produits
+	        for (Produit p : cp.getProduits()) {
+	            linkStmt.setInt(1, p.getIdProduit());
+	            linkStmt.setInt(2, cp.getIdCategorie());
+	            linkStmt.addBatch();
+	        }
+	        linkStmt.executeBatch();
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	}
+
 
 /*/ méthode permettant de supprimer une catégorie produit de la base de données /*/
     public void delete(int idCategorie) {

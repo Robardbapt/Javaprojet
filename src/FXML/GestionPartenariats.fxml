@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="IHM.GestionPartenariatsController">
+
+    <top>
+        <Label text="Commerces Partenaires du Centre"
+               style="-fx-font-size: 18px; -fx-padding: 15;" BorderPane.alignment="CENTER"/>
+    </top>
+
+    <center>
+        <TableView fx:id="tableCommerces" prefHeight="400" prefWidth="700">
+            <columns>
+                <TableColumn fx:id="colId" text="ID" prefWidth="80"/>
+                <TableColumn fx:id="colNom" text="Nom" prefWidth="150"/>
+                <TableColumn fx:id="colAdresse" text="Adresse" prefWidth="200"/>
+                <TableColumn fx:id="colSecteur" text="Secteur" prefWidth="150"/>
+            </columns>
+        </TableView>
+    </center>
+
+    <bottom>
+        <HBox spacing="10" alignment="CENTER" style="-fx-padding: 15;">
+            <Button text="Voir contrat associé" onAction="#handleVoirContrat" />
+            <Button text="Ajouter commerce" onAction="#handleAjouterCommerce" />
+            <Button text="Modifier commerce" onAction="#handleModifierCommerce" />
+            <Button text="Supprimer commerce" onAction="#handleSupprimerCommerce" />
+            <Button text="Gérer les catégories produits" onAction="#handleGererCategories" />
+            <Button text="Retour tableau de bord" onAction="#handleRetourDashboard" />
+            
+        </HBox>
+    </bottom>
+</BorderPane>

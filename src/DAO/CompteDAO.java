@@ -271,6 +271,57 @@ public class CompteDAO {
             e.printStackTrace();
         }
     }
+    
+    public int insertAndReturnId(Compte c) {
+        String sql = """
+            INSERT INTO Compte
+              (nom, email, motDePasse, pointFidelite, adresse, typeUser)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """;
+
+        try (Connection conn = DataBaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            stmt.setString(1, c.getNom());
+            stmt.setString(2, c.getEmail());
+            stmt.setString(3, c.getMotDePasse());
+            stmt.setFloat(4, c.getPointFidelite());
+            stmt.setString(5, c.getAdresse());
+            stmt.setString(6, c.getTypeUser());
+
+            stmt.executeUpdate();
+
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    return rs.getInt(1); // retourne l'ID généré
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return -1; // en cas d’erreur
+    }
+    
+    public void deplacerCompteVersCentre(int idCompte, int nouveauCentreId) {
+        try (Connection conn = DataBaseManager.getConnection()) {
+            // Supprimer les anciennes liaisons
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "DELETE FROM Compte_Poubelle WHERE idCompte = ?")) {
+                stmt.setInt(1, idCompte);
+                stmt.executeUpdate();
+            }
+
+            // Réaffecter toutes les poubelles du nouveau centre
+            lierComptePoubelle(idCompte, nouveauCentreId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    
+    }
 
 
-}
+

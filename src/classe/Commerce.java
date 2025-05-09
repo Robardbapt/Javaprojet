@@ -30,6 +30,14 @@ public class Commerce {
         this.contrats = new ArrayList<>();
     }
 
+    // Nouveau constructeur sans ID pour création initiale //
+    public Commerce(String nom, String adresse) {
+        this.nom = nom;
+        this.adresse = adresse;
+        this.categoriesProduits = new ArrayList<>();
+        this.contrats = new ArrayList<>();
+    }
+
     // Supprime le dernier contrat //
     public boolean supprimerContrat() {
         if (!contrats.isEmpty()) {

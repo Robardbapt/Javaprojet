@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="IHM.TransfererCentreController"
+      spacing="10" alignment="CENTER" style="-fx-padding: 20;">
+    <Label text="Choisir le nouveau centre de tri" style="-fx-font-size: 16px;" />
+    <ComboBox fx:id="centreBox" prefWidth="200" />
+    <Button text="Valider le transfert" onAction="#handleValider" />
+</VBox>
+

@@ -11,7 +11,8 @@
     <center>
         <VBox alignment="CENTER" spacing="15" BorderPane.alignment="CENTER">
             <Button text="Gérer les poubelles" onAction="#handleGestionPoubelles" />
-            <Button text="Gérer les comptes" onAction="#handleGestionComptes" />
+            <Button text="Gérer les comptes/utilisateurs" onAction="#handleGestionComptes" />
+            
         </VBox>
     </center>
 

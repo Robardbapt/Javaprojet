@@ -10,20 +10,22 @@ public class ContratDAO {
 
     private final CategorieProduitDAO cpDAO = new CategorieProduitDAO();
 
-/*/ méthode qui insert un contrat dans la base de données /*/
+    /*/ méthode qui insert un contrat dans la base de données /*/
     public void insert(Contrat c, int idCentreTri) {
-        String sql = "INSERT INTO Partenariat "
-                   + "(idContrat, id_centre_tri, dateDebut, dateFin, tauxConversion) "
-                   + "VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO partenariat (dateDebut, dateFin, tauxConversion, id_centre_tri) VALUES (?, ?, ?, ?)";
         try (Connection conn = DataBaseManager.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            stmt.setInt(1, c.getIdContrat());
-            stmt.setInt(2, idCentreTri);
-            stmt.setDate(3, new java.sql.Date(c.getDateDebut().getTime()));
-            stmt.setDate(4, new java.sql.Date(c.getDateFin().getTime()));
-            stmt.setInt(5, c.getTauxDeConversion());
+            stmt.setDate(1, new java.sql.Date(c.getDateDebut().getTime()));
+            stmt.setDate(2, new java.sql.Date(c.getDateFin().getTime()));
+            stmt.setInt(3, c.getTauxDeConversion());
+            stmt.setInt(4, idCentreTri);
             stmt.executeUpdate();
+
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                c.setIdContrat(rs.getInt(1));
+            }
 
             String linkSql = "INSERT INTO Contrat_Categorie (idContrat, idCategorie) VALUES (?, ?)";
             try (PreparedStatement linkStmt = conn.prepareStatement(linkSql)) {
@@ -40,7 +42,7 @@ public class ContratDAO {
         }
     }
 
-/*/ méthode supprimant un contrat et ses dépendances /*/
+    /*/ méthode supprimant un contrat et ses dépendances /*/
     public void delete(int idContrat) {
         String delLink = "DELETE FROM Contrat_Categorie WHERE idContrat = ?";
         String del = "DELETE FROM Partenariat WHERE idContrat = ?";
@@ -59,9 +61,9 @@ public class ContratDAO {
         }
     }
 
-/*/ méthode supprimant un contrat pour un centre de tri donnée /*/
+    /*/ méthode supprimant tous les contrats pour un centre donné /*/
     public void deleteByCentreId(int idCentreTri) {
-        String delLink = 
+        String delLink =
             "DELETE FROM Contrat_Categorie WHERE idContrat IN " +
             "(SELECT idContrat FROM Partenariat WHERE id_centre_tri = ?)";
         String del = "DELETE FROM Partenariat WHERE id_centre_tri = ?";
@@ -80,10 +82,9 @@ public class ContratDAO {
         }
     }
 
-/*/ méthode mettant à jour un contrat dans la base SQL /*/
+    /*/ méthode mettant à jour un contrat dans la base SQL /*/
     public void update(Contrat c) {
-        String sql = "UPDATE Partenariat SET dateDebut = ?, dateFin = ?, tauxConversion = ? "
-                   + "WHERE idContrat = ?";
+        String sql = "UPDATE Partenariat SET dateDebut = ?, dateFin = ?, tauxConversion = ? WHERE idContrat = ?";
         String delLink = "DELETE FROM Contrat_Categorie WHERE idContrat = ?";
         String linkSql = "INSERT INTO Contrat_Categorie (idContrat, idCategorie) VALUES (?, ?)";
 
@@ -113,7 +114,7 @@ public class ContratDAO {
         }
     }
 
-/*/ méthode récupérant un contrat par son ID /*/
+    /*/ méthode récupérant un contrat par son ID /*/
     public Contrat getById(int idContrat) {
         String sql = "SELECT * FROM Partenariat WHERE idContrat = ?";
         Contrat c = null;
@@ -129,7 +130,9 @@ public class ContratDAO {
                     rs.getDate("dateFin"),
                     rs.getInt("tauxConversion")
                 );
-                String linkSql = 
+                c.setIdCentre(rs.getInt("id_centre_tri"));
+
+                String linkSql =
                     "SELECT idCategorie FROM Contrat_Categorie WHERE idContrat = ?";
                 try (PreparedStatement linkStmt = conn.prepareStatement(linkSql)) {
                     linkStmt.setInt(1, idContrat);
@@ -146,7 +149,7 @@ public class ContratDAO {
         return c;
     }
 
-/*/ méthode récupérant les contrats liés à un centre de tri /*/
+    /*/ méthode récupérant les contrats liés à un centre de tri /*/
     public List<Contrat> getByCentreId(int idCentreTri) {
         List<Contrat> list = new ArrayList<>();
         String sql = "SELECT idContrat FROM Partenariat WHERE id_centre_tri = ?";
@@ -164,7 +167,7 @@ public class ContratDAO {
         return list;
     }
 
-/*/ méthode récupérant tous les contrats de la base SQL /*/
+    /*/ méthode récupérant tous les contrats de la base SQL /*/
     public List<Contrat> getAll() {
         List<Contrat> list = new ArrayList<>();
         String sql = "SELECT idContrat FROM Partenariat";
