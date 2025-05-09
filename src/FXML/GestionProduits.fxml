@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="IHM.GestionProduitsController"
+      spacing="10" alignment="CENTER" style="-fx-padding: 20;">
+
+    <Label text="Produits de la catégorie sélectionnée" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+
+    <TableView fx:id="tableProduits" prefWidth="500">
+        <columns>
+            <TableColumn fx:id="colId" text="ID" prefWidth="50" />
+            <TableColumn fx:id="colNom" text="Nom" prefWidth="150" />
+            <TableColumn fx:id="colPrix" text="Prix" prefWidth="100" />
+            <TableColumn fx:id="colDate" text="Date d'achat" prefWidth="150" />
+        </columns>
+    </TableView>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Button text="Ajouter" onAction="#handleAjouter" />
+        <Button text="Modifier" onAction="#handleModifier" />
+        <Button text="Supprimer" onAction="#handleSupprimer" />
+        <Button text="Retour" onAction="#handleRetour" />
+    </HBox>
+
+</VBox>

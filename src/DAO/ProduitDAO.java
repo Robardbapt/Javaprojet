@@ -5,10 +5,8 @@ import java.util.*;
 import classe.Produit;
 import classe.CategorieProduit;
 
-/*/ classe DAO de la classe Produit, permettant son implémentation dans une base de données/*/
 public class ProduitDAO {
 
-/*/ méthode qui insert un produit dans la base de données/*/
     public void insert(Produit p) {
         String sql = "INSERT INTO Produit (idProduit, nom, prix, dateAchat) VALUES (?, ?, ?, ?)";
         String linkSql = "INSERT INTO Produit_Categorie (idProduit, idCategorie) VALUES (?, ?)";
@@ -34,7 +32,51 @@ public class ProduitDAO {
         }
     }
 
-/*/ méthode supprimant un produit de la base de données /*/
+    public void insertEtLierAComptes(Produit p, int idCentre) {
+        String sqlProduit = "INSERT INTO Produit (nom, prix, dateAchat) VALUES (?, ?, ?)";
+        String sqlCategorie = "INSERT INTO Produit_Categorie (idProduit, idCategorie) VALUES (?, ?)";
+        String sqlGetAdmin = "SELECT id_admin FROM CentreDeTri WHERE idCentreDeTri = ?";
+        String sqlLiaison = "INSERT INTO Compte_Produit (idCompte, idProduit) VALUES (?, ?)";
+
+        try (Connection conn = DataBaseManager.getConnection();
+             PreparedStatement insertProduit = conn.prepareStatement(sqlProduit, Statement.RETURN_GENERATED_KEYS);
+             PreparedStatement insertCategorie = conn.prepareStatement(sqlCategorie);
+             PreparedStatement getAdmin = conn.prepareStatement(sqlGetAdmin);
+             PreparedStatement insertLien = conn.prepareStatement(sqlLiaison)) {
+
+            insertProduit.setString(1, p.getNom());
+            insertProduit.setFloat(2, p.getPrix());
+            insertProduit.setDate(3, new java.sql.Date(p.getDateAchat().getTime()));
+            insertProduit.executeUpdate();
+
+            ResultSet rs = insertProduit.getGeneratedKeys();
+            if (rs.next()) {
+                int idProduit = rs.getInt(1);
+                p.setIdProduit(idProduit);
+
+                for (CategorieProduit cat : p.getCategorieProduit()) {
+                    insertCategorie.setInt(1, idProduit);
+                    insertCategorie.setInt(2, cat.getIdCategorie());
+                    insertCategorie.addBatch();
+                }
+                insertCategorie.executeBatch();
+
+                // Lier à l'admin du centre
+                getAdmin.setInt(1, idCentre);
+                ResultSet res = getAdmin.executeQuery();
+                if (res.next()) {
+                    int idCompte = res.getInt("id_admin");
+                    insertLien.setInt(1, idCompte);
+                    insertLien.setInt(2, idProduit);
+                    insertLien.executeUpdate();
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void delete(int idProduit) {
         String delLink = "DELETE FROM Produit_Categorie WHERE idProduit = ?";
         String delProd = "DELETE FROM Produit WHERE idProduit = ?";
@@ -52,7 +94,6 @@ public class ProduitDAO {
         }
     }
 
-/*/ méthode mettant à jour un produit dans la base de données /*/
     public void update(Produit p) {
         String sql = "UPDATE Produit SET nom=?, prix=?, dateAchat=? WHERE idProduit=?";
         String delLink = "DELETE FROM Produit_Categorie WHERE idProduit = ?";
@@ -84,11 +125,10 @@ public class ProduitDAO {
         }
     }
 
-/*/ méthode récupérant un produit grâce à son ID dans la base de données /*/
     public Produit getById(int idProduit) {
         Produit p = null;
         String prodSql = "SELECT * FROM Produit WHERE idProduit = ?";
-        String catSql = 
+        String catSql =
             "SELECT c.idCategorie, c.nom, c.tauxReduction, c.pointNecessaire " +
             "FROM CategorieProduit c " +
             "JOIN Produit_Categorie pc ON c.idCategorie = pc.idCategorie " +
@@ -126,7 +166,6 @@ public class ProduitDAO {
         return p;
     }
 
-/*/ méthode récupérant tous les produits dans la base de données /*/
     public List<Produit> getAll() {
         List<Produit> list = new ArrayList<>();
         String sql = "SELECT idProduit FROM Produit";
@@ -142,7 +181,6 @@ public class ProduitDAO {
         return list;
     }
 
-/*/ méthode récupérant tous les produits d'une catégorieProduit/*/
     public List<Produit> getByCategorieId(int idCategorie) {
         List<Produit> list = new ArrayList<>();
         String sql = "SELECT idProduit FROM Produit_Categorie WHERE idCategorie = ?";

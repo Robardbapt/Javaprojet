@@ -1,6 +1,8 @@
 package classe;
 
-import java.util.*;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Fais partie du package classe qui représente l'ensemble des classes fonctionnelles 
@@ -18,7 +20,7 @@ public class Produit {
     // Constructeur de base //
     public Produit() {
         this.categorieProduit = new ArrayList<>();
-        this.dateAchat = new Date(); 
+        this.dateAchat = new Date(System.currentTimeMillis()); 
     }
 
     // Constructeur complet //
@@ -49,7 +51,7 @@ public class Produit {
         return sb.toString();
     }
 
-    // getters et setters //
+    // Getters et setters //
     public int getIdProduit() {
         return idProduit;
     }

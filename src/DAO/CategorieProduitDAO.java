@@ -8,34 +8,41 @@ import classe.Produit;
 public class CategorieProduitDAO {
 
 /*/ méthode permettant d'insérer une catégorie produit dans la base de données/*/
-	public void insert(CategorieProduit cp) {
-	    String sql =
-	        "INSERT INTO CategorieProduit (nom, tauxReduction, pointNecessaire) VALUES (?, ?, ?)";
-	    String linkSql =
-	        "INSERT INTO Produit_Categorie (idProduit, idCategorie) VALUES (?, ?)";
+	public void insert(CategorieProduit cp, int idCentre) {
+	    String sql = """
+	        INSERT INTO categorieproduit (nom, tauxReduction, pointNecessaire, id_centre_tri)
+	        VALUES (?, ?, ?, ?)
+	    """;
+	    String linkSql = """
+	        INSERT INTO produit_categorie (idProduit, idCategorie)
+	        VALUES (?, ?)
+	    """;
 
 	    try (Connection conn = DataBaseManager.getConnection();
-	         PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-	         PreparedStatement linkStmt = conn.prepareStatement(linkSql)) {
+	         PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
 	        stmt.setString(1, cp.getNom());
 	        stmt.setFloat(2, cp.getTauxReduction());
 	        stmt.setInt(3, cp.getPointNecessaire());
+	        stmt.setInt(4, idCentre);
 	        stmt.executeUpdate();
 
-	        // Récupérer l'ID généré automatiquement
+	        // 🔁 Récupération de l'id généré
 	        ResultSet rs = stmt.getGeneratedKeys();
 	        if (rs.next()) {
-	            cp.setIdCategorie(rs.getInt(1));
-	        }
+	            int idCategorie = rs.getInt(1);
+	            cp.setIdCategorie(idCategorie);
 
-	        // Insérer les associations avec les produits
-	        for (Produit p : cp.getProduits()) {
-	            linkStmt.setInt(1, p.getIdProduit());
-	            linkStmt.setInt(2, cp.getIdCategorie());
-	            linkStmt.addBatch();
+	            // 🔗 Liens vers les produits
+	            try (PreparedStatement linkStmt = conn.prepareStatement(linkSql)) {
+	                for (Produit p : cp.getProduits()) {
+	                    linkStmt.setInt(1, p.getIdProduit());
+	                    linkStmt.setInt(2, idCategorie);
+	                    linkStmt.addBatch();
+	                }
+	                linkStmt.executeBatch();
+	            }
 	        }
-	        linkStmt.executeBatch();
 
 	    } catch (SQLException e) {
 	        e.printStackTrace();
@@ -43,23 +50,60 @@ public class CategorieProduitDAO {
 	}
 
 
+
 /*/ méthode permettant de supprimer une catégorie produit de la base de données /*/
-    public void delete(int idCategorie) {
-        String delLink = "DELETE FROM Produit_Categorie WHERE idCategorie = ?";
-        String delCat  = "DELETE FROM CategorieProduit WHERE idCategorie = ?";
-        try (Connection conn = DataBaseManager.getConnection();
-             PreparedStatement stmt1 = conn.prepareStatement(delLink);
-             PreparedStatement stmt2 = conn.prepareStatement(delCat)) {
+	/**
+	 * Supprime une catégorie produit si elle n'est plus liée à aucun commerce,
+	 * en supprimant aussi les produits associés (avec toutes les contraintes).
+	 */
+	public void delete(int idCategorie) {
+	    try (Connection conn = DataBaseManager.getConnection()) {
+	        conn.setAutoCommit(false);
 
-            stmt1.setInt(1, idCategorie);
-            stmt1.executeUpdate();
-            stmt2.setInt(1, idCategorie);
-            stmt2.executeUpdate();
+	        // 1. Supprimer les produits associés manuellement
+	        String selectProd = "SELECT idProduit FROM produit_categorie WHERE idCategorie = ?";
+	        try (PreparedStatement ps = conn.prepareStatement(selectProd)) {
+	            ps.setInt(1, idCategorie);
+	            ResultSet rs = ps.executeQuery();
+	            while (rs.next()) {
+	                int idProd = rs.getInt("idProduit");
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+	                // Supprimer dans compte_produit
+	                try (PreparedStatement psDel = conn.prepareStatement("DELETE FROM compte_produit WHERE idProduit = ?")) {
+	                    psDel.setInt(1, idProd);
+	                    psDel.executeUpdate();
+	                }
+
+	                // Supprimer le produit lui-même
+	                try (PreparedStatement deleteProd = conn.prepareStatement("DELETE FROM produit WHERE idProduit = ?")) {
+	                    deleteProd.setInt(1, idProd);
+	                    deleteProd.executeUpdate();
+	                }
+	            }
+	        }
+
+	        // 2. Supprimer toutes les liaisons directes
+	        try (PreparedStatement stmt1 = conn.prepareStatement("DELETE FROM produit_categorie WHERE idCategorie = ?");
+	             PreparedStatement stmt2 = conn.prepareStatement("DELETE FROM commerce_categorie WHERE idCategorie = ?");
+	             PreparedStatement stmt3 = conn.prepareStatement("DELETE FROM contrat_categorie WHERE idCategorie = ?");
+	             PreparedStatement stmt4 = conn.prepareStatement("DELETE FROM categorieproduit WHERE idCategorie = ?")) {
+
+	            for (PreparedStatement stmt : List.of(stmt1, stmt2, stmt3, stmt4)) {
+	                stmt.setInt(1, idCategorie);
+	                stmt.executeUpdate();
+	            }
+	        }
+
+	        conn.commit();
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	}
+
+
+
+
 
 /*/ méthode permettant de mettre à jour une catégorie produit dans la base de données /*/
     public void update(CategorieProduit cp) {
@@ -155,4 +199,24 @@ public class CategorieProduitDAO {
         }
         return list;
     }
+    
+    public int getIdByNomEtCentre(String nom, int idCentre) {
+        String sql = "SELECT idCategorie FROM categorieproduit WHERE nom = ? AND id_centre_tri = ?";
+        try (Connection conn = DataBaseManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, nom);
+            ps.setInt(2, idCentre);
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("idCategorie");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1; // Retourne -1 si aucune catégorie trouvée
+    }
+
 }

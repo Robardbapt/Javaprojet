@@ -1,6 +1,7 @@
 package IHM;
 
 import DAO.CategorieProduitDAO;
+import DAO.CentreDeTriDAO;
 import DAO.CommerceDAO;
 import classe.CategorieProduit;
 import classe.Commerce;
@@ -84,15 +85,17 @@ public class GestionCategoriesController {
 
             CreerCategorieController controller = loader.getController();
             controller.setIdCommerce(commerce.getIdCommerce());
+            controller.setIdCentre(new CentreDeTriDAO().getIdCentreByCommerce(commerce.getIdCommerce())); // <-- ICI
+
             Stage stage = new Stage();
             controller.setStage(stage);
 
             stage.setScene(new Scene(root));
             stage.setTitle("Créer une nouvelle catégorie");
-            stage.initOwner(tableCategories.getScene().getWindow()); // facultatif mais propre
-            stage.showAndWait(); // ✅ attendre fermeture de la fenêtre
+            stage.initOwner(tableCategories.getScene().getWindow());
+            stage.showAndWait();
 
-            // Rechargement après fermeture
+            // Recharge après création
             commerce = new CommerceDAO().getById(commerce.getIdCommerce());
             chargerCategories();
 
@@ -100,6 +103,7 @@ public class GestionCategoriesController {
             e.printStackTrace();
         }
     }
+
 
 
 
@@ -143,17 +147,55 @@ public class GestionCategoriesController {
             return;
         }
 
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, "Supprimer la catégorie de ce commerce ?", ButtonType.YES, ButtonType.NO);
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
+                "Supprimer définitivement cette catégorie et tous les produits associés ?",
+                ButtonType.YES, ButtonType.NO);
         Optional<ButtonType> result = confirm.showAndWait();
+
         if (result.isPresent() && result.get() == ButtonType.YES) {
-            commerceDAO.supprimerCategorieDuCommerce(commerce.getIdCommerce(), selected.getNom());
+            CategorieProduitDAO dao = new CategorieProduitDAO();
+            dao.delete(selected.getIdCategorie());
             commerce = commerceDAO.getById(commerce.getIdCommerce());
             chargerCategories();
         }
     }
 
+
+
+    
+
     @FXML
     private void handleGererProduits() {
-        // À compléter : vue pour gérer les produits d'une catégorie sélectionnée
+        CategorieProduit selected = tableCategories.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            new Alert(Alert.AlertType.WARNING, "Veuillez sélectionner une catégorie.").showAndWait();
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/FXML/GestionProduits.fxml"));
+            Parent root = loader.load();
+
+            GestionProduitsController controller = loader.getController();
+            controller.setCategorie(selected);
+            int idCentre = new CentreDeTriDAO().getIdCentreByCommerce(commerce.getIdCommerce());
+            controller.setIdCentre(idCentre);
+
+            Stage stage = new Stage();
+            controller.setStage(stage);
+
+            stage.setScene(new Scene(root));
+            stage.setTitle("Produits de la catégorie : " + selected.getNom());
+            stage.initOwner(tableCategories.getScene().getWindow());
+            stage.showAndWait();
+
+            // Facultatif : recharger les catégories si besoin
+            commerce = commerceDAO.getById(commerce.getIdCommerce());
+            chargerCategories();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
 }

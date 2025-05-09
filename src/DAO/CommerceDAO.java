@@ -69,17 +69,44 @@ public class CommerceDAO {
     }
 
     public void delete(int idCommerce) {
-        String sql = "DELETE FROM commerce WHERE idCommerce = ?";
-        try (Connection conn = DataBaseManager.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DataBaseManager.getConnection()) {
 
-            ps.setInt(1, idCommerce);
-            ps.executeUpdate();
+            // Récupérer les catégories liées au commerce
+            List<String> noms = getCategoriesByCommerceId(idCommerce, conn);
+            CategorieProduitDAO catDAO = new CategorieProduitDAO();
+            ProduitDAO prodDAO = new ProduitDAO();
+
+            for (String nomCat : noms) {
+                int idCategorie = catDAO.getIdByNomEtCentre(nomCat, getIdCentreByCommerce(idCommerce));
+
+                // Si cette catégorie est unique au commerce
+                int count = countCommercesUtilisantCategorie(idCategorie);
+                if (count == 1) {
+                    catDAO.delete(idCategorie); // supprime tout : produits, contrat_categorie, produit_categorie, compte_produit
+                } else {
+                    // Sinon, juste délier le commerce de la catégorie
+                    supprimerCategorieDuCommerce(idCommerce, nomCat);
+                }
+            }
+
+            // Supprimer les lignes commerce_contrat et commerce_categorie
+            try (Statement st = conn.createStatement()) {
+                st.executeUpdate("DELETE FROM commerce_contrat WHERE idCommerce = " + idCommerce);
+                st.executeUpdate("DELETE FROM commerce_categorie WHERE idCommerce = " + idCommerce);
+            }
+
+            // Supprimer le commerce lui-même
+            String sql = "DELETE FROM commerce WHERE idCommerce = ?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, idCommerce);
+                ps.executeUpdate();
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
 
     public Commerce getById(int idCommerce) {
         Commerce c = null;
@@ -214,18 +241,58 @@ public class CommerceDAO {
     }
 
     public void ajouterCategorieAuCommerce(int idCommerce, String nomCategorie) {
-        String sql = "INSERT INTO commerce_categorie (idCommerce, idCategorie) VALUES (?, (SELECT idCategorie FROM categorieproduit WHERE nom = ?))";
-        try (Connection conn = DataBaseManager.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        String getCategorieSql = "SELECT idCategorie FROM categorieproduit WHERE nom = ? AND id_centre_tri = ("
+                               + "SELECT p.id_centre_tri FROM commerce_contrat cc "
+                               + "JOIN partenariat p ON cc.idContrat = p.idContrat "
+                               + "WHERE cc.idCommerce = ? LIMIT 1)";
+        
+        String insertCommerceCatSql = "INSERT INTO commerce_categorie (idCommerce, idCategorie) VALUES (?, ?)";
+        String insertContratCatSql = "INSERT IGNORE INTO contrat_categorie (idContrat, idCategorie) VALUES (?, ?)";
 
-            ps.setInt(1, idCommerce);
-            ps.setString(2, nomCategorie);
-            ps.executeUpdate();
+        try (Connection conn = DataBaseManager.getConnection();
+             PreparedStatement psGet = conn.prepareStatement(getCategorieSql)) {
+
+            psGet.setString(1, nomCategorie);
+            psGet.setInt(2, idCommerce);
+            ResultSet rs = psGet.executeQuery();
+
+            if (rs.next()) {
+                int idCategorie = rs.getInt("idCategorie");
+
+                // Insertion dans commerce_categorie
+                try (PreparedStatement psInsert = conn.prepareStatement(insertCommerceCatSql)) {
+                    psInsert.setInt(1, idCommerce);
+                    psInsert.setInt(2, idCategorie);
+                    psInsert.executeUpdate();
+                }
+
+                // Récupération du contrat
+                String getContratSql = "SELECT idContrat FROM commerce_contrat WHERE idCommerce = ? LIMIT 1";
+                try (PreparedStatement psContrat = conn.prepareStatement(getContratSql)) {
+                    psContrat.setInt(1, idCommerce);
+                    ResultSet rContrat = psContrat.executeQuery();
+
+                    if (rContrat.next()) {
+                        int idContrat = rContrat.getInt("idContrat");
+
+                        // Insertion dans contrat_categorie
+                        try (PreparedStatement psLink = conn.prepareStatement(insertContratCatSql)) {
+                            psLink.setInt(1, idContrat);
+                            psLink.setInt(2, idCategorie);
+                            psLink.executeUpdate();
+                        }
+                    }
+                }
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
+
+
+
 
     public Contrat getContratByCommerceId(int idCommerce) {
         String sql = "SELECT p.idContrat, p.dateDebut, p.dateFin, p.tauxConversion, p.id_centre_tri " +
@@ -296,4 +363,48 @@ public class CommerceDAO {
         }
         return null;
     }
+    
+    public int countCommercesUtilisantCategorie(int idCategorie) {
+        String sql = "SELECT COUNT(*) AS total FROM commerce_categorie WHERE idCategorie = ?";
+        try (Connection conn = DataBaseManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, idCategorie);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("total");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+    
+    public int getIdCentreByCommerce(int idCommerce) {
+        String sql = """
+            SELECT p.id_centre_tri
+            FROM commerce_contrat cc
+            JOIN partenariat p ON cc.idContrat = p.idContrat
+            WHERE cc.idCommerce = ?
+            LIMIT 1
+        """;
+
+        try (Connection conn = DataBaseManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, idCommerce);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("id_centre_tri");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1; // valeur par défaut si non trouvé
+    }
+
+
 }

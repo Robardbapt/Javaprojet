@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="IHM.AjoutProduitController"
+      spacing="10" alignment="CENTER" style="-fx-padding: 20;">
+
+    <Label text="Ajouter un produit" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+
+    <TextField fx:id="fieldNom" promptText="Nom du produit" />
+    <TextField fx:id="fieldPrix" promptText="Prix (€)" />
+    <DatePicker fx:id="fieldDate" promptText="Date d'achat" />
+
+    <HBox spacing="10">
+        <Button text="Ajouter" onAction="#handleAjouter" />
+        <Button text="Annuler" onAction="#handleAnnuler" />
+    </HBox>
+</VBox>

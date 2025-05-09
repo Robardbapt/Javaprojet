@@ -3,6 +3,7 @@ package IHM;
 import DAO.CategorieProduitDAO;
 import DAO.CommerceDAO;
 import classe.CategorieProduit;
+import classe.Commerce;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -15,6 +16,11 @@ public class CreerCategorieController {
 
     private int idCommerce;
     private Stage stage;
+    private int idCentre;
+    
+    public void setIdCentre(int idCentre) {
+        this.idCentre = idCentre;
+    }
 
     public void setIdCommerce(int idCommerce) {
         this.idCommerce = idCommerce;
@@ -43,6 +49,16 @@ public class CreerCategorieController {
             return;
         }
 
+        // ⚠️ Vérifie si le nom est déjà utilisé dans ce commerce
+        Commerce commerce = new CommerceDAO().getById(idCommerce);
+        for (String existing : commerce.getCategoriesProduits()) {
+            if (existing.equalsIgnoreCase(nom)) {
+                showAlert("Ce commerce possède déjà une catégorie nommée \"" + nom + "\".\nVeuillez choisir un autre nom.");
+                return;
+            }
+        }
+        
+        
         CategorieProduitDAO dao = new CategorieProduitDAO();
         CommerceDAO commerceDAO = new CommerceDAO();
 
@@ -51,11 +67,12 @@ public class CreerCategorieController {
         cp.setTauxReduction(taux);
         cp.setPointNecessaire(points);
 
-        dao.insert(cp);
-        commerceDAO.ajouterCategorieAuCommerce(idCommerce, nom);
+        dao.insert(cp, idCentre); // insertion dans categorieproduit
+        commerceDAO.ajouterCategorieAuCommerce(idCommerce, nom); // liaison
 
         stage.close();
     }
+
 
     @FXML
     private void handleAnnuler() {

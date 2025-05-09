@@ -168,5 +168,49 @@ public class CentreDeTriDAO {
 
         return -1; // ou 0 si tu préfères
     }
+    
+    public int getIdCentreByCategorie(int idCategorie) {
+        String sql = """
+            SELECT p.id_centre_tri
+            FROM Contrat_Categorie cc
+            JOIN Partenariat p ON cc.idContrat = p.idContrat
+            WHERE cc.idCategorie = ?
+            """;
+        try (Connection conn = DataBaseManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, idCategorie);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return rs.getInt("id_centre_tri");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+    
+    public int getIdCentreByCommerce(int idCommerce) {
+        String sql = """
+            SELECT cd.idCentreDeTri
+            FROM commerce_contrat cc
+            JOIN partenariat p ON cc.idContrat = p.idContrat
+            JOIN centredetri cd ON p.id_centre_tri = cd.idCentreDeTri
+            WHERE cc.idCommerce = ?
+            LIMIT 1
+        """;
+
+        try (Connection conn = DataBaseManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, idCommerce);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("idCentreDeTri");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
 
 }
