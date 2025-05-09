@@ -77,7 +77,7 @@ public class CompteDAO {
             e.printStackTrace();
         }
     }
-    
+
     public List<Compte> getByCentreId(int idCentre) {
         List<Compte> comptes = new ArrayList<>();
         String sql = """
@@ -252,7 +252,34 @@ public class CompteDAO {
             e.printStackTrace();
         }
     }
-    
+
+    public void deleteByCentre(int idCentre) {
+        List<Compte> comptes = getByCentreId(idCentre);
+        for (Compte compte : comptes) {
+            delete(compte.getIdCompte());
+        }
+    }
+
+    public void transfererComptesVers(int ancienCentre, int nouveauCentre) {
+        List<Compte> comptes = getByCentreId(ancienCentre);
+        for (Compte c : comptes) {
+            deplacerCompteVersCentre(c.getIdCompte(), nouveauCentre);
+        }
+    }
+
+    public void deplacerCompteVersCentre(int idCompte, int nouveauCentreId) {
+        try (Connection conn = DataBaseManager.getConnection()) {
+            try (PreparedStatement stmt = conn.prepareStatement(
+                    "DELETE FROM Compte_Poubelle WHERE idCompte = ?")) {
+                stmt.setInt(1, idCompte);
+                stmt.executeUpdate();
+            }
+            lierComptePoubelle(idCompte, nouveauCentreId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void lierComptePoubelle(int idCompte, int idCentre) {
         String sql = """
             INSERT INTO Compte_Poubelle (idCompte, idPoubelle)
@@ -271,7 +298,7 @@ public class CompteDAO {
             e.printStackTrace();
         }
     }
-    
+
     public int insertAndReturnId(Compte c) {
         String sql = """
             INSERT INTO Compte
@@ -293,7 +320,7 @@ public class CompteDAO {
 
             try (ResultSet rs = stmt.getGeneratedKeys()) {
                 if (rs.next()) {
-                    return rs.getInt(1); // retourne l'ID généré
+                    return rs.getInt(1);
                 }
             }
 
@@ -301,27 +328,6 @@ public class CompteDAO {
             e.printStackTrace();
         }
 
-        return -1; // en cas d’erreur
+        return -1;
     }
-    
-    public void deplacerCompteVersCentre(int idCompte, int nouveauCentreId) {
-        try (Connection conn = DataBaseManager.getConnection()) {
-            // Supprimer les anciennes liaisons
-            try (PreparedStatement stmt = conn.prepareStatement(
-                    "DELETE FROM Compte_Poubelle WHERE idCompte = ?")) {
-                stmt.setInt(1, idCompte);
-                stmt.executeUpdate();
-            }
-
-            // Réaffecter toutes les poubelles du nouveau centre
-            lierComptePoubelle(idCompte, nouveauCentreId);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-    
-    
-    }
-
-
-
+}

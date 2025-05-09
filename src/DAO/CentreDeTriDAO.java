@@ -12,6 +12,8 @@ public class CentreDeTriDAO {
     private final ContratDAO contratDAO = new ContratDAO();
     private final PoubelleDAO poubelleDAO = new PoubelleDAO();
     private final StatistiqueDAO statistiqueDAO = new StatistiqueDAO();
+    private final CompteDAO compteDAO = new CompteDAO();
+    private final CommerceDAO commerceDAO = new CommerceDAO();
 
     public void insert(CentreDeTri centre) {
         String sql = "INSERT INTO CentreDeTri (idCentreDeTri, nom, adresse, id_admin) VALUES (?, ?, ?, ?)";
@@ -40,9 +42,31 @@ public class CentreDeTriDAO {
         }
     }
 
-    public void delete(int idCentre) {
-        contratDAO.deleteByCentreId(idCentre);
+    public void delete(int idCentre, boolean transfererUtilisateurs, int idCentreDestination) {
+        // 1. Supprimer les poubelles du centre
         poubelleDAO.deleteByCentreId(idCentre);
+
+        // 2. Supprimer ou transférer les comptes
+        if (transfererUtilisateurs) {
+            compteDAO.transfererComptesVers(idCentre, idCentreDestination);
+        } else {
+            compteDAO.deleteByCentre(idCentre);
+        }
+
+        // 3. Supprimer ou transférer les commerces
+        if (transfererUtilisateurs) {
+            commerceDAO.transfererCommercesVers(idCentre, idCentreDestination);
+        } else {
+            List<classe.Commerce> commerces = commerceDAO.getByCentre(idCentre);
+            for (classe.Commerce c : commerces) {
+                commerceDAO.delete(c.getIdCommerce());
+            }
+        }
+
+        // 4. Supprimer les contrats
+        contratDAO.deleteByCentreId(idCentre);
+
+        // 5. Supprimer le centre de tri
         String sql = "DELETE FROM CentreDeTri WHERE idCentreDeTri = ?";
         try (Connection conn = DataBaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -130,9 +154,6 @@ public class CentreDeTriDAO {
         return list;
     }
 
-    /**
-     * Méthode utile pour l’IHM : récupérer les centres d’un admin donné
-     */
     public List<CentreDeTri> getByAdminId(int idAdmin) {
         List<CentreDeTri> centres = new ArrayList<>();
         String sql = "SELECT idCentreDeTri FROM CentreDeTri WHERE id_admin = ?";
@@ -149,7 +170,7 @@ public class CentreDeTriDAO {
         }
         return centres;
     }
-    
+
     public int getIdCentreByAdmin(int idAdmin) {
         String sql = "SELECT idCentreDeTri FROM CentreDeTri WHERE id_admin = ?";
         try (Connection conn = DataBaseManager.getConnection();
@@ -166,9 +187,9 @@ public class CentreDeTriDAO {
             e.printStackTrace();
         }
 
-        return -1; // ou 0 si tu préfères
+        return -1;
     }
-    
+
     public int getIdCentreByCategorie(int idCategorie) {
         String sql = """
             SELECT p.id_centre_tri
@@ -186,7 +207,7 @@ public class CentreDeTriDAO {
         }
         return -1;
     }
-    
+
     public int getIdCentreByCommerce(int idCommerce) {
         String sql = """
             SELECT cd.idCentreDeTri
@@ -211,6 +232,4 @@ public class CentreDeTriDAO {
         }
         return -1;
     }
-
-
 }

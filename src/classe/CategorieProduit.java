@@ -19,6 +19,12 @@ public class CategorieProduit {
     public CategorieProduit() {
         this.produits = new ArrayList<>();
     }
+    
+    public CategorieProduit(String nom, float tauxReduction, int pointNecessaire) {
+        this.nom = nom;
+        this.tauxReduction = tauxReduction;
+        this.pointNecessaire = pointNecessaire;
+    }
 
     // Constructeur complet //
     public CategorieProduit(int idCategorie, String nom, float tauxReduction, int pointNecessaire) {

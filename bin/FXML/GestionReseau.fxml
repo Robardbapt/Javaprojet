@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="IHM.GestionReseauController">
+    <top>
+        <Label text="Gestion du Réseau de Centres de Tri"
+               style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-padding: 20;"
+               BorderPane.alignment="CENTER" />
+    </top>
+
+    <center>
+        <TableView fx:id="tableCentres" prefHeight="400" prefWidth="800">
+            <columns>
+                <TableColumn fx:id="colNom" text="Nom du centre" prefWidth="200" />
+                <TableColumn fx:id="colAdresse" text="Adresse" prefWidth="200" />
+                <TableColumn fx:id="colAdmin" text="Admin associé" prefWidth="150" />
+                <TableColumn fx:id="colNbDepots" text="Nb dépôts" prefWidth="100" />
+                <TableColumn fx:id="colQuantite" text="Quantité totale (kg)" prefWidth="150" />
+            </columns>
+        </TableView>
+    </center>
+
+    <bottom>
+        <HBox spacing="20" alignment="CENTER" style="-fx-padding: 20;">
+            <Button text="Ajouter un centre" onAction="#ajouterCentre" />
+            <Button text="Supprimer le centre sélectionné" onAction="#supprimerCentre" />
+            <Button text="Retour à l'accueil" onAction="#retourAccueil" />
+        </HBox>
+    </bottom>
+</BorderPane>

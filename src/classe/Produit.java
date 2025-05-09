@@ -22,6 +22,13 @@ public class Produit {
         this.categorieProduit = new ArrayList<>();
         this.dateAchat = new Date(System.currentTimeMillis()); 
     }
+    
+    public Produit(String nom, float prix, Date dateAchat) {
+        this.nom = nom;
+        this.prix = prix;
+        this.dateAchat = dateAchat;
+        this.categorieProduit = new ArrayList<>();
+    }
 
     // Constructeur complet //
     public Produit(int idProduit, String nom, float prix, Date dateAchat) {

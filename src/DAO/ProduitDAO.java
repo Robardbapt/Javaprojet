@@ -196,4 +196,17 @@ public class ProduitDAO {
         }
         return list;
     }
+    
+    public void lierProduitCategorie(int idProduit, int idCategorie) {
+        String sql = "INSERT INTO Produit_Categorie (idProduit, idCategorie) VALUES (?, ?)";
+        try (Connection conn = DataBaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idProduit);
+            stmt.setInt(2, idCategorie);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

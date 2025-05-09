@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="IHM.CreerCentreController" spacing="10" alignment="CENTER" style="-fx-padding: 20;">
+    <Label text="Créer un centre de tri" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+    
+    <TextField fx:id="nomField" promptText="Nom du centre"/>
+    <TextField fx:id="adresseField" promptText="Adresse"/>
+    <TextField fx:id="emailField" promptText="Email de l'admin"/>
+    <PasswordField fx:id="mdpField" promptText="Mot de passe de l'admin"/>
+    
+    <Button text="Créer" onAction="#handleCreer"/>
+</VBox>

@@ -405,6 +405,34 @@ public class CommerceDAO {
         }
         return -1; // valeur par défaut si non trouvé
     }
+    
+    public void transfererCommercesVers(int idCentreSource, int idCentreDestination) {
+        String getContratsSql = "SELECT cc.idCommerce, cc.idContrat FROM commerce_contrat cc " +
+                                 "JOIN partenariat p ON cc.idContrat = p.idContrat " +
+                                 "WHERE p.id_centre_tri = ?";
+
+        String updatePartenariatSql = "UPDATE partenariat SET id_centre_tri = ? WHERE idContrat = ?";
+
+        try (Connection conn = DataBaseManager.getConnection();
+             PreparedStatement psGet = conn.prepareStatement(getContratsSql);
+             PreparedStatement psUpdate = conn.prepareStatement(updatePartenariatSql)) {
+
+            psGet.setInt(1, idCentreSource);
+            ResultSet rs = psGet.executeQuery();
+
+            while (rs.next()) {
+                int idContrat = rs.getInt("idContrat");
+                psUpdate.setInt(1, idCentreDestination);
+                psUpdate.setInt(2, idContrat);
+                psUpdate.addBatch();
+            }
+            psUpdate.executeBatch();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 
 }

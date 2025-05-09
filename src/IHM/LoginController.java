@@ -12,13 +12,10 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-/**
- * Contrôleur pour la page de connexion.
- */
 public class LoginController {
 
     @FXML
-    private TextField usernameField;  // email
+    private TextField usernameField;
 
     @FXML
     private PasswordField passwordField;
@@ -26,9 +23,6 @@ public class LoginController {
     @FXML
     private Label errorLabel;
 
-    /**
-     * Gère la tentative de connexion de l'utilisateur.
-     */
     @FXML
     private void handleLogin() {
         String email = usernameField.getText();
@@ -46,20 +40,25 @@ public class LoginController {
             if (compte != null) {
                 Stage stage = (Stage) usernameField.getScene().getWindow();
                 FXMLLoader loader;
+                Parent root;
 
-                if ("admin".equalsIgnoreCase(compte.getTypeUser())) {
+                if (compte.getIdCompte() == 1) {
+                    // Superadmin => GestionRéseau
+                    loader = new FXMLLoader(getClass().getClassLoader().getResource("FXML/GestionReseau.fxml"));
+                    root = loader.load();
+                    // PAS de setCompte ici si la méthode n’existe pas
+                    stage.setTitle("Gestion du Réseau");
+
+                } else if ("admin".equalsIgnoreCase(compte.getTypeUser())) {
                     loader = new FXMLLoader(getClass().getClassLoader().getResource("FXML/AdminDashboard.fxml"));
-                } else {
-                    loader = new FXMLLoader(getClass().getClassLoader().getResource("FXML/UserDashboard.fxml"));
-                }
-
-                Parent root = loader.load();
-
-                if ("admin".equalsIgnoreCase(compte.getTypeUser())) {
+                    root = loader.load();
                     AdminDashboardController controller = loader.getController();
                     controller.setCompte(compte);
                     stage.setTitle("Tableau de bord - Admin");
+
                 } else {
+                    loader = new FXMLLoader(getClass().getClassLoader().getResource("FXML/UserDashboard.fxml"));
+                    root = loader.load();
                     UserDashboardController controller = loader.getController();
                     controller.setCompte(compte);
                     stage.setTitle("Tableau de bord - Utilisateur");
@@ -77,9 +76,6 @@ public class LoginController {
         }
     }
 
-    /**
-     * Redirige vers la page d'inscription.
-     */
     @FXML
     private void handleShowRegister() {
         try {
