@@ -43,10 +43,8 @@ public class LoginController {
                 Parent root;
 
                 if (compte.getIdCompte() == 1) {
-                    // Superadmin => GestionRéseau
                     loader = new FXMLLoader(getClass().getClassLoader().getResource("FXML/GestionReseau.fxml"));
                     root = loader.load();
-                    // PAS de setCompte ici si la méthode n’existe pas
                     stage.setTitle("Gestion du Réseau");
 
                 } else if ("admin".equalsIgnoreCase(compte.getTypeUser())) {

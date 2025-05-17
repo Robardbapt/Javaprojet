@@ -50,12 +50,10 @@ public class AjoutCommerceController {
             return;
         }
 
-        // 1. Création du commerce
         Commerce commerce = new Commerce(nom, adresse);
         CommerceDAO commerceDAO = new CommerceDAO();
         commerceDAO.insert(commerce);
 
-        // 2. Création du contrat
         Contrat contrat = new Contrat();
         contrat.setDateDebut(Date.valueOf(debut));
         contrat.setDateFin(Date.valueOf(fin));
@@ -64,7 +62,6 @@ public class AjoutCommerceController {
         ContratDAO contratDAO = new ContratDAO();
         contratDAO.insert(contrat, idCentre);
 
-        // 3. Lien commerce ↔ contrat
         commerceDAO.lierAuContrat(commerce.getIdCommerce(), contrat.getIdContrat());
 
         stage.close();

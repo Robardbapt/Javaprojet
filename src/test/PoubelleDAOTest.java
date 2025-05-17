@@ -15,7 +15,7 @@ public class PoubelleDAOTest {
 
         // Nettoyage initial : supprimer tous les centres (cascade supprime les poubelles)
         for (CentreDeTri ct : ctDao.getAll()) {
-            ctDao.delete(ct.getIdCentreDeTri());
+            ctDao.delete(ct.getIdCentreDeTri(), false, 0);
         }
 
         // Test 1 : insertion d'un centre et d'une poubelle
@@ -55,7 +55,7 @@ public class PoubelleDAOTest {
         printAll(dao, 10);
 
         // Nettoyage final
-        ctDao.delete(10);
+        ctDao.delete(10, false, 0);
     }
 
     private static void printAll(PoubelleDAO dao, int idCentre) {

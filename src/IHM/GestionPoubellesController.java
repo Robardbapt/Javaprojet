@@ -79,9 +79,9 @@ public class GestionPoubellesController {
             Stage stage = new Stage();
             stage.setTitle("Modifier une poubelle");
             stage.setScene(new Scene(root));
-            stage.showAndWait(); // attend fermeture
+            stage.showAndWait(); 
 
-            chargerPoubelles(); // recharge la table
+            chargerPoubelles(); 
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -95,7 +95,7 @@ public class GestionPoubellesController {
             Parent root = loader.load();
 
             GestionCentreController controller = loader.getController();
-            controller.setCompte(compteAdmin); // on repasse le compte admin
+            controller.setCompte(compteAdmin);
 
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));
@@ -119,7 +119,7 @@ public class GestionPoubellesController {
         poubelleDAO.update(selected);
 
         new Alert(Alert.AlertType.INFORMATION, "La poubelle a été vidée avec succès.").showAndWait();
-        chargerPoubelles(); // Recharge la table pour mettre à jour l'affichage
+        chargerPoubelles(); 
     }
     @FXML
     private void handleCreerPoubelle() {
@@ -135,7 +135,7 @@ public class GestionPoubellesController {
             stage.setScene(new Scene(root));
             stage.showAndWait();
 
-            chargerPoubelles(); // rafraîchit la liste après création
+            chargerPoubelles();
 
         } catch (Exception e) {
             e.printStackTrace();

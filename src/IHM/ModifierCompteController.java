@@ -19,7 +19,6 @@ public class ModifierCompteController {
     public void setCompte(Compte compte) {
         this.compte = compte;
 
-        // Pré-remplissage des champs
         nomField.setText(compte.getNom());
         emailField.setText(compte.getEmail());
         adresseField.setText(compte.getAdresse());
@@ -32,7 +31,6 @@ public class ModifierCompteController {
     private void handleSave() {
         if (compte == null) return;
 
-        // Mise à jour des champs
         compte.setNom(nomField.getText());
         compte.setEmail(emailField.getText());
         compte.setAdresse(adresseField.getText());
@@ -41,6 +39,6 @@ public class ModifierCompteController {
         compteDAO.update(compte);
 
         Stage stage = (Stage) nomField.getScene().getWindow();
-        stage.close(); // ferme la fenêtre de modification
+        stage.close();
     }
 }

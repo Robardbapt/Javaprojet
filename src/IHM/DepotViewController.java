@@ -47,7 +47,6 @@ public class DepotViewController {
                 throw new IllegalArgumentException("Champs invalides");
             }
 
-            // Sécurisation : recharge de la poubelle depuis la BDD
             this.poubelle = poubelleDAO.getById(poubelle.getIdPoubelle());
 
             Contenu contenu = mapToEnum(type);

@@ -31,12 +31,10 @@ public class ModifierProduitController {
         fieldNom.setText(produit.getNom());
         fieldPrix.setText(String.valueOf(produit.getPrix()));
 
-        // ✅ Conversion propre si dateAchat est java.sql.Date
         if (produit.getDateAchat() != null) {
             try {
                 fieldDate.setValue(((java.sql.Date) produit.getDateAchat()).toLocalDate());
             } catch (ClassCastException e) {
-                // fallback si ce n'est pas un java.sql.Date
                 LocalDate date = produit.getDateAchat().toInstant()
                         .atZone(ZoneId.systemDefault())
                         .toLocalDate();
@@ -72,7 +70,7 @@ public class ModifierProduitController {
 
         produit.setNom(nom);
         produit.setPrix(prix);
-        produit.setDateAchat(java.sql.Date.valueOf(date)); // ✅ conversion inverse
+        produit.setDateAchat(java.sql.Date.valueOf(date));
 
         new ProduitDAO().update(produit);
         stage.close();

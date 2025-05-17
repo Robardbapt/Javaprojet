@@ -15,7 +15,7 @@ public class PoubelleTest {
         poubelle.setAdresse("12 rue Verte");
 
         // Création utilisateur //
-        Compte utilisateur = new Compte(1, "Justin", "justin@bieber.com", "azerty", "12 rue Verte");
+        Compte utilisateur = new Compte(1, "Justin", "justin@bieber.com", "azerty", "12 rue Verte", null);
         utilisateur.ajouterPoubelle(poubelle); 
 
         // Création déchet //

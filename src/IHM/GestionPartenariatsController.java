@@ -25,7 +25,7 @@ public class GestionPartenariatsController {
     @FXML private TableColumn<Commerce, Integer> colId;
     @FXML private TableColumn<Commerce, String> colNom;
     @FXML private TableColumn<Commerce, String> colAdresse;
-    @FXML private TableColumn<Commerce, String> colSecteur; // Peut être supprimé si inutile
+    @FXML private TableColumn<Commerce, String> colSecteur;
 
     private final CentreDeTriDAO centreDAO = new CentreDeTriDAO();
     private final CommerceDAO commerceDAO = new CommerceDAO();
@@ -126,7 +126,7 @@ public class GestionPartenariatsController {
             stage.setTitle("Modifier Commerce");
             stage.showAndWait();
 
-            chargerCommerces(); // Recharge après modif
+            chargerCommerces();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -188,9 +188,8 @@ public class GestionPartenariatsController {
             Parent root = loader.load();
 
             AdminDashboardController controller = loader.getController();
-            controller.setCompte(compteAdmin); // ou setCompteAdmin selon ton code
+            controller.setCompte(compteAdmin);
 
-            // ✅ Réutilise la fenêtre actuelle au lieu d'en créer une nouvelle
             Stage stage = (Stage) tableCommerces.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("Tableau de bord administrateur");

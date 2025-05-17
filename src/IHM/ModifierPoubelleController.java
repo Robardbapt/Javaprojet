@@ -38,7 +38,7 @@ public class ModifierPoubelleController {
             poubelle.setAdresse(adresseField.getText());
             poubelle.setType(typeBox.getValue());
 
-            poubelle.verifierPleine(); // calcule automatiquement estPleine
+            poubelle.verifierPleine();
             dao.update(poubelle);
 
             Stage stage = (Stage) nomField.getScene().getWindow();

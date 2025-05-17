@@ -144,7 +144,7 @@ public class GestionComptesController {
             stage.setScene(new Scene(root));
             stage.showAndWait();
 
-            chargerComptes();  // Refresh
+            chargerComptes();
         } catch (Exception e) {
             e.printStackTrace();
         }

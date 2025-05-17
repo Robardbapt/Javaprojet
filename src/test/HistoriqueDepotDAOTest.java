@@ -22,7 +22,7 @@ public class HistoriqueDepotDAOTest {
 
         // Nettoyage initial
         for (CentreDeTri ct : ctDao.getAll()) {
-            ctDao.delete(ct.getIdCentreDeTri());
+            ctDao.delete(ct.getIdCentreDeTri(), false, 0);
         }
 
         // Création d'un centre et d'une poubelle
@@ -72,6 +72,6 @@ public class HistoriqueDepotDAOTest {
         // Nettoyage final
         dDao.delete(901);
         pDao.deleteByCentreId(7);
-        ctDao.delete(7);
+        ctDao.delete(7, false, 0);
     }
 }

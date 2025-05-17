@@ -144,7 +144,6 @@ public class AchatProduitController implements Initializable {
             stage.setTitle("Tableau de bord utilisateur");
             stage.show();
 
-            // Fermer la fenêtre actuelle
             ((Stage) labelPoints.getScene().getWindow()).close();
         } catch (Exception e) {
             e.printStackTrace();

@@ -49,7 +49,6 @@ public class CreerCategorieController {
             return;
         }
 
-        // ⚠️ Vérifie si le nom est déjà utilisé dans ce commerce
         Commerce commerce = new CommerceDAO().getById(idCommerce);
         for (String existing : commerce.getCategoriesProduits()) {
             if (existing.equalsIgnoreCase(nom)) {
@@ -67,7 +66,7 @@ public class CreerCategorieController {
         cp.setTauxReduction(taux);
         cp.setPointNecessaire(points);
 
-        dao.insert(cp, idCentre); // insertion dans categorieproduit
+        dao.insert(cp, idCentre); 
         commerceDAO.ajouterCategorieAuCommerce(idCommerce, nom); // liaison
 
         stage.close();

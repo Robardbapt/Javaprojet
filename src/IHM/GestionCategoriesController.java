@@ -60,11 +60,9 @@ public class GestionCategoriesController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/FXML/GestionPartenariats.fxml"));
             Parent root = loader.load();
 
-            // On récupère le contrôleur et on transmet l'admin
             GestionPartenariatsController controller = loader.getController();
             controller.setCompteAdmin(new CommerceDAO().getCompteAdminFromCommerce(commerce.getIdCommerce()));
 
-            // ✅ On récupère la fenêtre actuelle au lieu d'en créer une nouvelle
             Stage stage = (Stage) tableCategories.getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("Gestion des Partenariats");
@@ -95,7 +93,6 @@ public class GestionCategoriesController {
             stage.initOwner(tableCategories.getScene().getWindow());
             stage.showAndWait();
 
-            // Recharge après création
             commerce = new CommerceDAO().getById(commerce.getIdCommerce());
             chargerCategories();
 
@@ -129,7 +126,6 @@ public class GestionCategoriesController {
             stage.initOwner(tableCategories.getScene().getWindow());
             stage.showAndWait();
 
-            // Rechargement après modification
             commerce = commerceDAO.getById(commerce.getIdCommerce());
             chargerCategories();
 

@@ -15,7 +15,7 @@ public class CompteDAOTest {
         }
 
         // Test 1 : insertion d'un compte
-        Compte compte1 = new Compte(1, "Justin", "justin@bieber.com", "mdp", "1 Rue JB");
+        Compte compte1 = new Compte(1, "Justin", "justin@bieber.com", "mdp", "1 Rue JB", null);
         dao.insert(compte1);
         System.out.println(" Après INSERT compte1 ");
         printAll(dao);

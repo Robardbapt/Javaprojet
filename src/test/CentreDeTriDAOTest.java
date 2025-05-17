@@ -11,7 +11,7 @@ public class CentreDeTriDAOTest {
 
         // Nettoyage initial
         for (CentreDeTri ct : dao.getAll()) {
-            dao.delete(ct.getIdCentreDeTri());
+            dao.delete(ct.getIdCentreDeTri(), false, 0);
         }
 
         // Test 1 : insertion d'un centre
@@ -37,7 +37,7 @@ public class CentreDeTriDAOTest {
         }
 
         // Test 4 : suppression
-        dao.delete(100);
+        dao.delete(100, false, 0);
         System.out.println("\n Après DELETE ct1 ");
         printAll(dao);
     }

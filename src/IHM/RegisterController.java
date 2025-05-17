@@ -20,7 +20,7 @@ import java.util.*;
 public class RegisterController {
 
     @FXML
-    private TextField usernameField;  // utilisé ici comme email
+    private TextField usernameField; 
 
     @FXML
     private PasswordField passwordField;
@@ -55,9 +55,6 @@ public class RegisterController {
         }
     }
 
-    /**
-     * Création d'un compte si l'email n'existe pas encore.
-     */
     @FXML
     private void handleRegister() {
         String email = usernameField.getText();
@@ -70,7 +67,6 @@ public class RegisterController {
         }
 
         try (Connection conn = DataBaseConnection.getConnection()) {
-            // Vérifie si un compte avec cet email existe déjà
             PreparedStatement check = conn.prepareStatement("SELECT * FROM Compte WHERE email = ?");
             check.setString(1, email);
             ResultSet rs = check.executeQuery();
@@ -78,7 +74,6 @@ public class RegisterController {
             if (rs.next()) {
                 messageLabel.setText("Un compte avec cet email existe déjà.");
             } else {
-                // Insère le compte
                 PreparedStatement insert = conn.prepareStatement(
                     "INSERT INTO Compte (nom, email, motDePasse, pointFidelite, adresse, typeUser) VALUES (?, ?, ?, 0, ?, 'user')",
                     Statement.RETURN_GENERATED_KEYS
@@ -94,7 +89,6 @@ public class RegisterController {
                     int idCompte = generatedKeys.getInt(1);
                     int idCentre = nomCentreToId.get(centreNom);
 
-                    // Récupère les poubelles du centre et les associe au compte
                     PreparedStatement getPoubelles = conn.prepareStatement("SELECT idPoubelle FROM Poubelle WHERE idCentreDeTri = ?");
                     getPoubelles.setInt(1, idCentre);
                     ResultSet rsP = getPoubelles.executeQuery();
@@ -115,9 +109,6 @@ public class RegisterController {
         }
     }
 
-    /**
-     * Retour à l'écran de connexion.
-     */
     @FXML
     private void handleBack() {
         try {

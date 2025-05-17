@@ -26,10 +26,6 @@ public class HistoriqueController {
     private Compte compte;
     private final HistoriqueDepotDAO historiqueDepotDAO = new HistoriqueDepotDAO();
 
-    /**
-     * Setter appelé depuis le contrôleur précédent (UserDashboard).
-     * Permet de charger l'historique de l'utilisateur connecté.
-     */
     public void setCompte(Compte compte) {
         this.compte = compte;
         afficherDepots();
@@ -58,7 +54,7 @@ public class HistoriqueController {
             Parent root = loader.load();
 
             UserDashboardController controller = loader.getController();
-            controller.setCompte(compte);  // on renvoie le même compte
+            controller.setCompte(compte);
 
             Stage stage = (Stage) tableHistorique.getScene().getWindow();
             stage.setScene(new Scene(root));

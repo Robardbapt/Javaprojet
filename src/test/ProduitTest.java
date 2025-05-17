@@ -15,7 +15,7 @@ public class ProduitTest {
         CategorieProduit categorie2 = new CategorieProduit(2, "Maison", 0.10f, 5);
 
         // Création d’un produit //
-        Produit produit = new Produit(1001, "Aspirateur Robot", 199.99f, new Date());
+        Produit produit = new Produit();
 
         // Test 1 : sans catégorie //
         System.out.println("Test 1 - Description sans catégorie :\n" + produit.afficherDescription());

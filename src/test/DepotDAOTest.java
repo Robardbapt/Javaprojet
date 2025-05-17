@@ -20,7 +20,7 @@ public class DepotDAOTest {
 
         // Nettoyage initial des centres (cascade sur poubelles et dépôts)
         for (CentreDeTri ct : ctDao.getAll()) {
-            ctDao.delete(ct.getIdCentreDeTri());
+            ctDao.delete(ct.getIdCentreDeTri(), false, 0);
         }
 
         // Création d'un centre et d'une poubelle
@@ -73,7 +73,7 @@ public class DepotDAOTest {
 
         // Nettoyage final
         pDao.deleteByCentreId(1);
-        ctDao.delete(1);
+        ctDao.delete(1, false, 0);
     }
 
     private static void printAll(DepotDAO dao) {

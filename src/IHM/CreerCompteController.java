@@ -43,7 +43,6 @@ public class CreerCompteController {
         }
 
         try {
-            // Création sans ID (auto-incrément SQL)
             Compte c = new Compte();
             c.setNom(nom);
             c.setEmail(email);
@@ -53,9 +52,8 @@ public class CreerCompteController {
             c.setPointFidelite(0);
 
             int generatedId = compteDAO.insertAndReturnId(c);
-            c.setIdCompte(generatedId); // mise à jour de l’objet Compte avec l’ID réel
+            c.setIdCompte(generatedId);
 
-            // Lier automatiquement au centre de tri de l’admin si c’est un user
             if (type.equals("user")) {
                 int idCentre = centreDAO.getIdCentreByAdmin(compteAdmin.getIdCompte());
                 compteDAO.lierComptePoubelle(generatedId, idCentre);

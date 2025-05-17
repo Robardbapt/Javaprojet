@@ -56,8 +56,22 @@ public class GestionReseauController implements Initializable {
 
     @FXML
     private void ajouterCentre() {
-        Alerte.info("Fonctionnalité Ajouter à implémenter.");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/FXML/CreerCentre.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("Créer un nouveau centre de tri");
+            stage.setScene(new Scene(root));
+            stage.setOnHiding(event -> chargerCentres());
+            stage.show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Alerte.erreur("Erreur lors de l'ouverture du formulaire de création.");
+        }
     }
+
 
     @FXML
     private void supprimerCentre() {

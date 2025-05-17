@@ -47,7 +47,7 @@ public class ProduitsAvecReductionController implements Initializable {
         TableColumn<Produit, Float> prixReduitCol = new TableColumn<>("Prix après réduction");
         prixReduitCol.setCellValueFactory(p -> {
             float reductionPourcent = bon.getTauxReduction();
-            float taux = Math.min(reductionPourcent / 100f, 0.9f); // Ex: 15.0 devient 0.15 (15%)
+            float taux = Math.min(reductionPourcent / 100f, 0.9f);
             float prixReduit = Math.max(0f, p.getValue().getPrix() * (1 - taux));
             return new SimpleFloatProperty(prixReduit).asObject();
         });

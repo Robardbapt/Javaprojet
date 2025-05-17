@@ -73,7 +73,6 @@ public class CategorieProduitController implements Initializable {
         BonReduction bon = new BonReduction("Réduction pour " + selected.getNom(), selected.getPointNecessaire(), selected.getTauxReduction(), selected);
         new BonReductionDAO().insert(bon, compte.getIdCompte());
 
-        // Mise à jour du compte
         compte = new CompteDAO().getById(compte.getIdCompte());
         SessionManager.setCompteConnecte(compte);
         labelPoints.setText("Points de fidélité : " + compte.getPointFidelite());

@@ -23,8 +23,8 @@ public class ProduitDAOTest {
 
         // Test 1 : insertion d'une catégorie et d'un produit
         CategorieProduit cat = new CategorieProduit(10, "TestCat", 0.10f, 100);
-        catDao.insert(cat);
-        Produit p = new Produit(100, "ProduitTest", 9.99f, new Date());
+        catDao.insert(cat, 0);
+        Produit p = new Produit();
         p.ajouterCategorie(cat);
         dao.insert(p);
         System.out.println(" Après INSERT produit ");

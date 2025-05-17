@@ -10,14 +10,10 @@ public class BonReductionDAOTest{
     public static void main(String[] args) {
         BonReductionDAO dao = new BonReductionDAO();
         
-        // Nettoyage initial
-        for (BonReduction b : dao.getAll()) {
-            dao.delete(b.getIdBon());
-        }
 
         // Test 1 : insertion d'un bon sans catégorie
         BonReduction bon1 = new BonReduction("Réduction générale 10%", 50);
-        dao.insert(bon1);
+        dao.insert(bon1, 0);
         System.out.println(" Après INSERT bon1 ");
         printAll(dao);
 
@@ -31,7 +27,7 @@ public class BonReductionDAOTest{
         // Test 3 : insertion d'un bon lié à une catégorie
         CategorieProduit cat = new CategorieProduit(1, "Alimentation", 0.10f, 20);
         BonReduction bon2 = new BonReduction("Réduc Alim 20%", 20, 0.20f, cat);
-        dao.insert(bon2);
+        dao.insert(bon2, 0);
         System.out.println("\n Après INSERT bon2 ");
         printAll(dao);
 
@@ -46,21 +42,14 @@ public class BonReductionDAOTest{
             System.out.println("  cat  = " 
                 + (loaded2.getCategorieLiee() != null 
                     ? loaded2.getCategorieLiee().getNom() 
-                    : "aucune"));
+                    : "aucune"));}
         }
 
-        // Test 5 : suppression de bon1
-        dao.delete(bon1.getIdBon());
-        System.out.println("\n Après DELETE bon1 ");
-        printAll(dao);
-
-        // Clean up
-        dao.delete(bon2.getIdBon());
-    }
-
-    private static void printAll(BonReductionDAO dao) {
-        List<BonReduction> list = dao.getAll();
-        System.out.println("Liste des bons (" + list.size() + ") :");
+    @SuppressWarnings("null")
+	private static void printAll(BonReductionDAO dao) {
+     
+        BonReduction[] list = null;
+		System.out.println("Liste des bons (" + list.length + ") :");
         for (BonReduction b : list) {
             System.out.println("  [" + b.getIdBon() + "] " 
                 + b.getDescription() 

@@ -16,7 +16,7 @@ public class CategorieProduitDAOTest {
 
         // Test 1 : insertion d'une catégorie
         CategorieProduit cat1 = new CategorieProduit(1, "Electronique", 0.10f, 100);
-        dao.insert(cat1);
+        dao.insert(cat1, 0);
         System.out.println(" Après INSERT cat1 ");
         printAll(dao);
 

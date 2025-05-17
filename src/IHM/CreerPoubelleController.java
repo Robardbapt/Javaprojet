@@ -36,13 +36,13 @@ public class CreerPoubelleController {
             String adresse = adresseField.getText();
             TypePoubelle type = TypePoubelle.valueOf(typeBox.getValue());
 
-            Poubelle p = new Poubelle(nom, type); // id non spécifié car auto-incrémenté
+            Poubelle p = new Poubelle(nom, type);
             p.setCapaciteMax(capacite);
             p.setAdresse(adresse);
 
             int idCentre = centreDAO.getIdCentreByAdmin(admin.getIdCompte());
 
-            poubelleDAO.insert(p, idCentre); // insert sans id manuel
+            poubelleDAO.insert(p, idCentre);
 
             new Alert(Alert.AlertType.INFORMATION, "Poubelle créée avec succès.").showAndWait();
             ((Stage) nomField.getScene().getWindow()).close();

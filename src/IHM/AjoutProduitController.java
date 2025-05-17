@@ -62,7 +62,7 @@ public class AjoutProduitController {
         p.ajouterCategorie(categorie);
 
         ProduitDAO dao = new ProduitDAO();
-        dao.insertEtLierAComptes(p, idCentre); // insertion et liaison aux comptes du centre
+        dao.insertEtLierAComptes(p, idCentre);
         stage.close();
     }
 

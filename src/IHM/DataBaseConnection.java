@@ -9,7 +9,6 @@ import java.sql.SQLException;
  */
 public class DataBaseConnection {
 
-    // URL de la base de données (à adapter selon ta config)
     private static final String URL = "jdbc:mysql://localhost:3306/tri_selectif?serverTimezone=UTC";
     private static final String USER = "root";
     private static final String PASSWORD = "";
@@ -39,9 +38,6 @@ public class DataBaseConnection {
         return connection;
     }
 
-    /**
-     * Ferme proprement la connexion si elle est ouverte.
-     */
     public static void closeConnection() {
         try {
             if (connection != null && !connection.isClosed()) {

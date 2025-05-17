@@ -40,7 +40,7 @@ public class AdminDashboardController {
             Parent root = loader.load();
 
             GestionCentreController controller = loader.getController();
-            controller.setCompte(compte); // passe l'admin connecté
+            controller.setCompte(compte); 
 
             Stage stage = (Stage) welcomeLabel.getScene().getWindow();
             stage.setScene(new Scene(root));

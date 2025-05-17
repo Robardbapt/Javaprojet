@@ -17,7 +17,6 @@ public class ModifierCategorieController {
 
     public void setCategorie(CategorieProduit categorie) {
         this.categorie = categorie;
-        // Pré-remplissage des champs
         fieldNom.setText(categorie.getNom());
         fieldTaux.setText(String.valueOf(categorie.getTauxReduction()));
         fieldPoints.setText(String.valueOf(categorie.getPointNecessaire()));

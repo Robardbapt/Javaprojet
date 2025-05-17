@@ -21,7 +21,7 @@ public class CommerceDAOTest {
             dao.delete(c.getIdCommerce());
         }
         for (CentreDeTri ct : ctDao.getAll()) {
-            ctDao.delete(ct.getIdCentreDeTri());
+            ctDao.delete(ct.getIdCentreDeTri(), false, 0);
         }
         for (Contrat c : cDao.getAll()) {
             cDao.delete(c.getIdContrat());
@@ -77,7 +77,7 @@ public class CommerceDAOTest {
 
         // 9) Nettoyage final
         cDao.delete(300);
-        ctDao.delete(shopId);
+        ctDao.delete(shopId, false, shopId);
     }
 
     private static void printAll(CommerceDAO dao) {

@@ -122,7 +122,6 @@ public class GestionProduitsController {
             stage.initOwner(tableProduits.getScene().getWindow());
             stage.showAndWait();
 
-            // Recharger la liste après modification
             chargerProduits();
 
         } catch (IOException e) {

@@ -20,7 +20,7 @@ public class StatistiqueDAOTest {
         StatistiqueDAO sDao = new StatistiqueDAO();
 
         // Cleanup éventuel
-        ctDao.delete(1);
+        ctDao.delete(1, false, 0);
 
         // Test initial sans dépôts
         System.out.println(" Test initial sans dépôts ");
@@ -63,6 +63,6 @@ public class StatistiqueDAOTest {
         dDao.delete(2000);
         dDao.delete(2001);
         pDao.deleteByCentreId(1);
-        ctDao.delete(1);
+        ctDao.delete(1, false, 0);
     }
 }

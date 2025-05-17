@@ -15,7 +15,7 @@ public class ContratDAOTest {
 
         //créer un centre et supprimer ses contrats
         int centreId = 500;
-        ctDao.delete(centreId);
+        ctDao.delete(centreId, false, centreId);
         ctDao.insert(new CentreDeTri(centreId, "CentreContrat", "AdresseTest"));
 
         for (Contrat c : dao.getAll()) {
@@ -51,7 +51,7 @@ public class ContratDAOTest {
         printAll(dao);
 
         // Nettoyage final
-        ctDao.delete(centreId);
+        ctDao.delete(centreId, false, centreId);
     }
 
     private static void printAll(ContratDAO dao) {

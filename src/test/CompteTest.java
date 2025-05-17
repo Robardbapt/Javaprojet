@@ -11,7 +11,7 @@ import java.util.*;
 public class CompteTest {
     public static void main(String[] args) {
         // Création du compte //
-        Compte utilisateur = new Compte(1, "Justin", "justin@bieber.com", "password123", "5 rue des Lilas");
+        Compte utilisateur = new Compte(1, "Justin", "justin@bieber.com", "password123", "5 rue des Lilas", null);
 
         // Test 1 : Connexion réussie //
         System.out.println("Test 1 - Connexion réussie ? " + utilisateur.seConnecter("justin@bieber.com", "password123")); // true
@@ -40,7 +40,7 @@ public class CompteTest {
         System.out.println("Points restants : " + utilisateur.getPointFidelite());
 
         // Test 5 : Achat d'un produit //
-        Produit p = new Produit(101, "Écocup", 2.5f, new Date());
+        Produit p = new Produit();
         System.out.println("Test 5 - Achat produit :");
         for (String ligne : utilisateur.acheterProduits(p)) {
             System.out.println(ligne);
