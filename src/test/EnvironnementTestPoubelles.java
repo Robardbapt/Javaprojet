@@ -55,19 +55,22 @@ public class EnvironnementTestPoubelles {
         BonReductionDAO bonDAO = new BonReductionDAO();
         ContratDAO contratDAO = new ContratDAO();
 
+        Random rand = new Random();
+
         // Superadmin
         Compte superadmin = new Compte(1, "SuperAdmin", "admin@tri.fr", "admin", "Central", "admin");
+        superadmin.setPointFidelite(rand.nextInt(101)); 
         compteDAO.insert(superadmin);
 
         List<CategorieProduit> allCategories = new ArrayList<>();
 
         for (int i = 1; i <= 2; i++) {
             Compte admin = new Compte(100 + i, "Admin" + i, "admin" + i + "@tri.fr", "admin", "Zone" + i, "admin");
+            admin.setPointFidelite(rand.nextInt(101)); 
             compteDAO.insert(admin);
 
             CentreDeTri centre = new CentreDeTri(200 + i, "CentreTri" + i, "Adresse" + i, admin.getIdCompte());
 
-            // Ajouter 5 poubelles (une de chaque type)
             for (TypePoubelle type : TypePoubelle.values()) {
                 Poubelle p = new Poubelle("Poubelle_" + type + "_C" + i, type);
                 p.setCapaciteActuelle(0);
@@ -75,9 +78,8 @@ public class EnvironnementTestPoubelles {
                 centre.placerPoubelle(p, "Adresse" + i);
             }
 
-            centreDAO.insert(centre); // INSERT AVANT LE CONTRAT
+            centreDAO.insert(centre);
 
-            // Créer un contrat de base pour le centre
             Contrat contrat = new Contrat();
             contrat.setDateDebut(Date.valueOf(LocalDate.now()));
             contrat.setDateFin(Date.valueOf(LocalDate.now().plusYears(2)));
@@ -85,7 +87,6 @@ public class EnvironnementTestPoubelles {
             contratDAO.insert(contrat, centre.getIdCentreDeTri());
             centre.ajouterPartenariat(contrat);
 
-            // Commerces + catégories + produits
             for (int j = 1; j <= 3; j++) {
                 Commerce commerce = new Commerce("CommerceC" + i + "_" + j, "Rue Com" + j);
                 commerceDAO.insert(commerce);
@@ -110,13 +111,12 @@ public class EnvironnementTestPoubelles {
                 }
             }
 
-            // Utilisateurs
             for (int u = 1; u <= 4; u++) {
                 Compte user = new Compte(3000 + i * 10 + u, "UserC" + i + "_" + u, "user" + i + u + "@mail.com", "user", "Adresse" + i, "user");
+                user.setPointFidelite(rand.nextInt(101)); 
                 compteDAO.insert(user);
                 compteDAO.lierComptePoubelle(user.getIdCompte(), centre.getIdCentreDeTri());
 
-                // Ajouter 1 ou 2 bons à partir de la liste des catégories
                 for (int b = 0; b < 2; b++) {
                     int index = ((i - 1) * 12 + (u - 1) * 2 + b);
                     if (index < allCategories.size()) {
